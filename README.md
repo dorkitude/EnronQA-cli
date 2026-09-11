@@ -50,8 +50,8 @@ brew install dorkitude/tap/enronqa-cli
 ### Ubuntu 22.04+ amd64: apt
 
 ```sh
-curl -fLO https://github.com/dorkitude/EnronQA-cli/releases/download/v0.1.0/enronqa-cli_0.1.0_amd64.deb
-sudo apt install ./enronqa-cli_0.1.0_amd64.deb
+curl -fLO https://github.com/dorkitude/EnronQA-cli/releases/download/v0.2.0/enronqa-cli_0.2.0_amd64.deb
+sudo apt install ./enronqa-cli_0.2.0_amd64.deb
 ```
 
 Homebrew supplies Python; the `.deb` bundles an isolated Python runtime. The `.deb` is a downloadable package, not a hosted apt repository.
@@ -59,7 +59,7 @@ Homebrew supplies Python; the `.deb` bundles an isolated Python runtime. The `.d
 ### Python / uv
 
 ```sh
-uv tool install 'https://github.com/dorkitude/EnronQA-cli/releases/download/v0.1.0/enronqa_cli-0.1.0-py3-none-any.whl'
+uv tool install 'https://github.com/dorkitude/EnronQA-cli/releases/download/v0.2.0/enronqa_cli-0.2.0-py3-none-any.whl'
 ```
 
 Alternatively, use `pip install` with that wheel URL inside a Python 3.10+ virtual environment. Release assets include checksums. Every installation method requires a separate `enronqa fetch` to download the dataset.
@@ -99,6 +99,7 @@ These apply to `score` and `check`.
 | `--retries N` | Retries after the first attempt. Default `2`: at most three attempts per question, with backoff. |
 | `--max-consecutive-failures N` | Stop scheduling after this many consecutive questions exhaust their retries. Default `5`. Completed results and failures are preserved. |
 | `--concurrency N` | Maximum in-flight requests. Default `1`; increase it to trade higher throughput for more requests already in flight when failures occur. |
+| `--timeout SECONDS` | Request socket timeout. Default `60`; must be positive. |
 
 `--judge-prompt` cannot be combined with `--verbose` or other flags that configure the built-in prompt. Conflicts fail during preflight. Endpoint, model, credentials, and request-handling options still work with custom prompts.
 
@@ -126,9 +127,9 @@ Batch reports include per-question results, submitted answers and metadata, refe
 
 ## Validation and failures
 
-The CLI checks configuration, local data, and output destinations before reading a batch or making judge requests. It validates the entire batch before grading: malformed JSONL, missing/blank answers, unknown IDs, out-of-set IDs, and duplicate IDs reject the whole batch with line-numbered errors. There are no partial grades for invalid input.
+The CLI checks configuration, local data, and output destinations before reading a batch or making judge requests. It validates the entire batch before grading: malformed JSONL, missing/blank answers, unknown IDs, out-of-set IDs, and duplicate IDs reject the whole batch with line-numbered errors. There are no partial grades for invalid input. Invalid `judge-input` batches write their validation report to stderr and emit no JSONL; coverage warnings also go to stderr.
 
-Transient request errors and invalid judge JSON are retried. Exhausted questions are recorded as failures and processing continues until the consecutive-failure limit is reached. Clear configuration errors, such as rejected credentials or an unknown model, stop processing immediately. Failed or interrupted grading returns a nonzero exit status and preserves the report of completed, failed, and unprocessed items. An incorrect answer alone is not a processing error.
+Transient request errors and invalid judge JSON are retried. Exhausted questions are recorded as failures and processing continues until the consecutive-failure limit is reached. The consecutive-failure count follows completion order; report results retain input order. Clear configuration errors, such as rejected credentials or an unknown model, stop processing immediately. Failed or interrupted grading returns a nonzero exit status and preserves the report of completed, failed, and unprocessed items. Ctrl-C stops scheduling and retries, waits for in-flight requests to finish or time out, then writes the report. An incorrect answer alone is not a processing error.
 
 Existing output files require `--force` and are replaced only when output is ready. Sharded export can replace an existing directory only if its manifest accounts for all files in that directory.
 

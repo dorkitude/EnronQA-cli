@@ -8,11 +8,11 @@ uv sync --locked
 uv run pytest
 uv build
 uv export --no-dev --no-emit-project --format requirements-txt --output-file packaging/requirements-release.txt
-uv run --no-project python packaging/build_deb.py --wheel dist/enronqa_cli-0.1.0-py3-none-any.whl --version 0.1.0
+uv run --no-project python packaging/build_deb.py --wheel dist/enronqa_cli-0.2.0-py3-none-any.whl --version 0.2.0
 ```
 
 The amd64 `.deb` includes CPython 3.12.14 and hash-pinned Python dependencies in
-`/opt/enronqa-cli`. `apt install ./enronqa-cli_0.1.0_amd64.deb` installs it without
+`/opt/enronqa-cli`. `apt install ./enronqa-cli_0.2.0_amd64.deb` installs it without
 post-install Python downloads or modifying system Python. Apt may fetch OS
 dependencies through the configured Ubuntu repositories.
 Supported target: Ubuntu 22.04 or newer on amd64. Other systems use the wheel.

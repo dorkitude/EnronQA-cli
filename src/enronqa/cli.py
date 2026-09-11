@@ -15,7 +15,7 @@ from . import __version__
 from .data import DATASET, REVISION, Dataset, default_dir, digest
 from .data import fetch as fetch_data
 from .output import output, preflight
-from .scoring import score as score_batch
+from .judging import JudgeConfig, prepare_inputs, score as score_batch
 from .scoring import validation
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
@@ -30,11 +30,6 @@ class Selection(str, Enum):
     dev = "dev"
     test = "test"
     all = "all"
-
-
-class Scorer(str, Enum):
-    normalized = "normalized-exact"
-    exact = "exact"
 
 
 @contextmanager
@@ -264,12 +259,9 @@ def document_export(
 
 INSTRUCTIONS = """EnronQA-cli answer conventions (not upstream EnronQA instructions):
 Return one JSON object per question, with question_id and a nonblank string answer.
-Use the concise answer you judge correct. Put reasoning in a separate optional field.
-Use the exact string \"I don't know\" to abstain; abstentions count as incorrect.
-The default scorer compares against upstream gold and alternate answers after Unicode
-NFC normalization, case folding, and whitespace collapse. It preserves punctuation,
-numbers, and negation. Valid paraphrases can fail: this measures lexical agreement,
-not semantic correctness. No answer-format instructions are added to questions.
+Use the answer you judge correct. Put reasoning in a separate optional field.
+The judge evaluates meaning using the question, gold answer, and source email.
+No answer-format instructions are added to questions.
 """
 
 
@@ -292,22 +284,21 @@ def instructions(
         )
 
 
-def batch(input_path, selection, output_path, force, data_dir, scorer=None):
-    with errors():
-        preflight(output_path, force)
-        with Dataset(data_dir) as dataset:
-            if input_path == "-":
-                records, report = validation(
-                    getattr(sys.stdin, "buffer", sys.stdin), dataset, selection
-                )
-            else:
-                with open(input_path, "rb") as stream:
-                    records, report = validation(stream, dataset, selection)
-            if report["valid"] and scorer is not None:
-                report = score_batch(records, report, dataset, scorer)
-            emit(report, output_path, force)
-            if not report["valid"]:
-                raise typer.Exit(2)
+def read_batch(input_path, dataset, selection):
+    if input_path == "-":
+        return validation(getattr(sys.stdin, "buffer", sys.stdin), dataset, selection)
+    with open(input_path, "rb") as stream:
+        return validation(stream, dataset, selection)
+
+
+def finish_report(report, output_path, force):
+    emit(report, output_path, force)
+    if not report["valid"]:
+        raise typer.Exit(2)
+    if not report.get("processing", {}).get("complete", True):
+        raise typer.Exit(
+            130 if report["processing"]["stop_reason"] == "interrupted" else 1
+        )
 
 
 @app.command()
@@ -319,8 +310,37 @@ def validate(
     json_output: bool = typer.Option(False, "--json"),
     data_dir: Path | None = None,
 ):
-    """Validate every JSONL record before grading; '-' reads stdin. Always JSON."""
-    batch(input_path, selection.value, output_path, force, data_dir)
+    """Validate every JSONL record; '-' reads stdin. Always JSON; no API calls."""
+    with errors():
+        preflight(output_path, force)
+        with Dataset(data_dir) as dataset:
+            _, report = read_batch(input_path, dataset, selection.value)
+            finish_report(report, output_path, force)
+
+
+@app.command("judge-input")
+def judge_input(
+    input_path: str,
+    selection: Selection = typer.Option(..., "--set"),
+    output_path: Path | None = typer.Option(None, "--output"),
+    force: bool = False,
+    data_dir: Path | None = None,
+):
+    """Validate then export judge-ready JSONL. No API configuration required."""
+    with errors():
+        preflight(output_path, force)
+        with Dataset(data_dir) as dataset:
+            records, report = read_batch(input_path, dataset, selection.value)
+            if not report["valid"]:
+                # Keep stdout/the output file strictly judge inputs, never error records.
+                typer.echo(json.dumps(report, ensure_ascii=False), err=True)
+                raise typer.Exit(2)
+            packets = prepare_inputs(records, dataset)
+            for warning in report["warnings"]:
+                typer.echo("Warning: " + warning["message"], err=True)
+            with output(output_path, force) as stream:
+                for packet in packets:
+                    stream.write(json.dumps(packet, ensure_ascii=False) + "\n")
 
 
 @app.command()
@@ -329,38 +349,91 @@ def score(
     selection: Selection = typer.Option(..., "--set"),
     output_path: Path | None = typer.Option(None, "--output"),
     force: bool = False,
-    scorer: Scorer = Scorer.normalized,
     json_output: bool = typer.Option(False, "--json"),
     data_dir: Path | None = None,
+    base_url: str | None = typer.Option(
+        None, help="API base URL; defaults to OPENAI_BASE_URL."
+    ),
+    model: str | None = typer.Option(None, help="Required provider model identifier."),
+    api_key_env: str = "OPENAI_API_KEY",
+    verbose: bool = typer.Option(
+        False, "--verbose", help="Request a verdict and brief explanation."
+    ),
+    judge_prompt: Path | None = None,
+    retries: int = typer.Option(2, min=0),
+    max_consecutive_failures: int = typer.Option(5, min=1),
+    concurrency: int = typer.Option(1, min=1),
+    timeout: float = typer.Option(
+        60, min=0.001, help="Request socket timeout in seconds."
+    ),
 ):
-    """Validate then grade a JSONL batch. Accuracy is lexical, not semantic."""
-    batch(input_path, selection.value, output_path, force, data_dir, scorer.value)
+    """Validate then judge a JSONL batch using an OpenAI-compatible API."""
+    with errors():
+        preflight(output_path, force)
+        config = JudgeConfig.create(
+            base_url,
+            model,
+            api_key_env,
+            verbose,
+            judge_prompt,
+            retries,
+            max_consecutive_failures,
+            concurrency,
+            timeout,
+        )
+        with Dataset(data_dir) as dataset:
+            records, report = read_batch(input_path, dataset, selection.value)
+            if report["valid"]:
+                report = score_batch(prepare_inputs(records, dataset), report, config)
+            finish_report(report, output_path, force)
 
 
 @app.command()
 def check(
     question_id: str,
     answer: str = typer.Option(...),
-    scorer: Scorer = Scorer.normalized,
     output_path: Path | None = typer.Option(None, "--output"),
     force: bool = False,
     json_output: bool = typer.Option(False, "--json"),
     data_dir: Path | None = None,
+    base_url: str | None = typer.Option(
+        None, help="API base URL; defaults to OPENAI_BASE_URL."
+    ),
+    model: str | None = typer.Option(None, help="Required provider model identifier."),
+    api_key_env: str = "OPENAI_API_KEY",
+    verbose: bool = typer.Option(
+        False, "--verbose", help="Request a verdict and brief explanation."
+    ),
+    judge_prompt: Path | None = None,
+    retries: int = typer.Option(2, min=0),
+    max_consecutive_failures: int = typer.Option(5, min=1),
+    concurrency: int = typer.Option(1, min=1),
+    timeout: float = typer.Option(
+        60, min=0.001, help="Request socket timeout in seconds."
+    ),
 ):
-    """Check one answer without storing a run. Returns a JSON report."""
+    """Judge one answer. JSON report; no coverage warning or stored run."""
     with errors():
         preflight(output_path, force)
+        config = JudgeConfig.create(
+            base_url,
+            model,
+            api_key_env,
+            verbose,
+            judge_prompt,
+            retries,
+            max_consecutive_failures,
+            concurrency,
+            timeout,
+        )
         with Dataset(data_dir) as dataset:
             records, report = validation(
                 [json.dumps({"question_id": question_id, "answer": answer})],
                 dataset,
                 "all",
             )
-            if report["valid"]:
-                report = score_batch(records, report, dataset, scorer.value)
-            # Single checks have no batch-completeness expectation.
             report.pop("coverage")
             report["warnings"] = []
-            emit(report, output_path, force)
-            if not report["valid"]:
-                raise typer.Exit(2)
+            if report["valid"]:
+                report = score_batch(prepare_inputs(records, dataset), report, config)
+            finish_report(report, output_path, force)

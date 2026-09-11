@@ -1,16 +1,9 @@
-"""Reusable full-batch validation and lexical comparison; no model calls."""
+"""Reusable full-batch answer validation; no model calls."""
 
 import json
 import math
-import unicodedata
-from datetime import datetime, timezone
 
-from . import __version__
 from .data import DATASET, REVISION
-
-
-def normalize(text):
-    return " ".join(unicodedata.normalize("NFC", text).casefold().split())
 
 
 def json_object(pairs):
@@ -77,7 +70,7 @@ def validation(stream, dataset, selection):
                 error(f"Question does not belong to selected set '{selection}'", qid)
         if not isinstance(answer, str) or not answer.strip():
             error(
-                'answer must be a nonblank string; use "I don\'t know" to abstain',
+                "answer must be a nonblank string",
                 qid if isinstance(qid, str) else None,
             )
         records.append(value)
@@ -111,65 +104,3 @@ def validation(stream, dataset, selection):
         "errors": errors,
     }
     return records, report
-
-
-def grade(record, question, scorer="normalized-exact"):
-    transform = normalize if scorer == "normalized-exact" else lambda x: x
-    abstained = normalize(record["answer"]) == "i don't know"
-    references = [question["answer"], *question["alternate_answers"]]
-    matched = next(
-        (ref for ref in references if transform(record["answer"]) == transform(ref)),
-        None,
-    )
-    return {
-        "question_id": question["question_id"],
-        "question": question["question"],
-        "split": question["split"],
-        "document_id": question["document_id"],
-        "submitted_answer": record["answer"],
-        "reference_answers": references,
-        "correct": matched is not None and not abstained,
-        "abstained": abstained,
-        "comparison": {
-            "scorer": scorer,
-            "matched_reference": matched if not abstained else None,
-        },
-        "metadata": {
-            key: value
-            for key, value in record.items()
-            if key not in ("question_id", "answer")
-        },
-    }
-
-
-def score(records, validation_report, dataset, scorer="normalized-exact"):
-    if scorer not in ("normalized-exact", "exact"):
-        raise ValueError("Unknown scorer")
-    if not validation_report["valid"]:
-        raise ValueError("Cannot grade an invalid batch")
-    results = [
-        grade(record, dataset.question(record["question_id"]), scorer)
-        for record in records
-    ]
-    correct = sum(item["correct"] for item in results)
-    return {
-        **validation_report,
-        "cli_version": __version__,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "scorer": {
-            "name": scorer,
-            "version": "1",
-            "meaning": "Lexical agreement with upstream gold or alternate answers; not semantic correctness",
-            "normalization": ["Unicode NFC", "casefold", "whitespace collapse"]
-            if scorer == "normalized-exact"
-            else [],
-        },
-        "summary": {
-            "correct": correct,
-            "incorrect": len(results) - correct,
-            "abstained": sum(r["abstained"] for r in results),
-            "denominator": len(results),
-            "accuracy": correct / len(results),
-        },
-        "results": results,
-    }

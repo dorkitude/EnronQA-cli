@@ -1,6 +1,5 @@
 import hashlib
 import json
-import sqlite3
 
 import pytest
 from typer.testing import CliRunner
@@ -8,43 +7,8 @@ from typer.testing import CliRunner
 from enronqa.cli import app
 from enronqa.data import FILES, REVISION, Dataset, build_index
 from enronqa.output import output
-from enronqa.scoring import normalize
 
 runner = CliRunner()
-
-
-@pytest.fixture
-def corpus(tmp_path, monkeypatch):
-    root = tmp_path / "cache"
-    dest = root / REVISION / "index.sqlite"
-    dest.parent.mkdir(parents=True)
-    db = sqlite3.connect(dest)
-    db.executescript("""CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT);
-    INSERT INTO metadata VALUES ('schema','1');
-    CREATE TABLE documents(document_id TEXT PRIMARY KEY,email TEXT,user TEXT);
-    CREATE TABLE questions(question_id TEXT PRIMARY KEY,split TEXT,document_id TEXT,question TEXT,answer TEXT,alternates TEXT);
-    """)
-    db.execute("INSERT INTO metadata VALUES (?,?)", ("revision", REVISION))
-    db.executemany(
-        "INSERT INTO documents VALUES (?,?,?)",
-        [
-            ("d1", "Synthetic email one", "a"),
-            ("d2", "Synthetic email two", "b"),
-            ("d3", "Synthetic email three", "a"),
-        ],
-    )
-    db.executemany(
-        "INSERT INTO questions VALUES (?,?,?,?,?,?)",
-        [
-            ("q1", "test", "d1", "Was it approved?", "approved", '["yes"]'),
-            ("q2", "test", "d2", "How much?", "$5", "[]"),
-            ("q3", "train", "d3", "Who?", "Chef", "[]"),
-        ],
-    )
-    db.commit()
-    db.close()
-    monkeypatch.setenv("ENRONQA_DATA_DIR", str(root))
-    return root
 
 
 def invoke(args, data=None):
@@ -64,6 +28,7 @@ def invoke(args, data=None):
         ["documents", "get"],
         ["documents", "export"],
         ["score"],
+        ["judge-input"],
         ["check"],
         ["validate"],
         ["instructions"],
@@ -74,7 +39,7 @@ def test_help(args):
 
 
 def test_version():
-    assert invoke(["--version"]).stdout.strip() == "0.1.0"
+    assert invoke(["--version"]).stdout.strip() == "0.2.0"
 
 
 def test_missing_data(tmp_path, monkeypatch):
@@ -103,74 +68,9 @@ def test_export_sample(corpus):
     )
 
 
-def test_score(corpus):
-    r = invoke(
-        ["score", "-", "--set", "test"],
-        "\n".join(
-            [
-                json.dumps(
-                    {
-                        "question_id": "q1",
-                        "answer": " YES ",
-                        "correct": "metadata",
-                        "reasoning": "why",
-                    }
-                ),
-                json.dumps({"question_id": "q2", "answer": "I don't know"}),
-            ]
-        ),
-    )
-    assert r.exit_code == 0, r.output
-    report = json.loads(r.stdout)
-    assert report["summary"] == {
-        "correct": 1,
-        "incorrect": 1,
-        "abstained": 1,
-        "denominator": 2,
-        "accuracy": 0.5,
-    }
-    assert report["results"][0]["metadata"] == {
-        "correct": "metadata",
-        "reasoning": "why",
-    }
-    assert report["warnings"] == []
-    assert report["dataset"]["revision"] == REVISION
-
-
-@pytest.mark.parametrize(
-    "answer", ["not approved", "approved or denied", "APPROVED!", "it was approved"]
-)
-def test_no_substring(corpus, answer):
-    result = json.loads(invoke(["check", "q1", "--answer", answer]).stdout)
-    assert result["summary"]["accuracy"] == 0
-
-
-@pytest.mark.parametrize("answer", ["5", "$50", "-$5"])
-def test_numeric_punctuation(corpus, answer):
-    assert (
-        json.loads(invoke(["check", "q2", "--answer", answer]).stdout)["summary"][
-            "accuracy"
-        ]
-        == 0
-    )
-
-
-def test_normalize():
-    assert normalize(" E\u0301  FOO\n") == "é foo"
-
-
-def test_exact(corpus):
-    assert (
-        json.loads(
-            invoke(["check", "q1", "--answer", "APPROVED", "--scorer", "exact"]).stdout
-        )["summary"]["accuracy"]
-        == 0
-    )
-
-
 def test_validation_all_errors(corpus):
     data = 'not json\n[]\n{"question_id":"q1","answer":"yes"}\n{"question_id":"q1","answer":""}\n{"question_id":"q3"}\n{"question_id":"missing","answer":5}\n'
-    r = invoke(["score", "-", "--set", "test"], data)
+    r = invoke(["validate", "-", "--set", "test"], data)
     assert r.exit_code == 2
     report = json.loads(r.stdout)
     assert len(report["errors"]) == 8
@@ -181,10 +81,9 @@ def test_validation_all_errors(corpus):
 def test_coverage(corpus):
     report = json.loads(
         invoke(
-            ["score", "-", "--set", "test"], '{"question_id":"q1","answer":"yes"}'
+            ["validate", "-", "--set", "test"], '{"question_id":"q1","answer":"yes"}'
         ).stdout
     )
-    assert report["summary"]["accuracy"] == 1
     assert report["coverage"] == {"submitted": 1, "total": 2, "missing": 1}
     assert report["warnings"][0]["code"] == "incomplete_question_set"
 

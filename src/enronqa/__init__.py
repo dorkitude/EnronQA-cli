@@ -1,3 +1,3 @@
-"""Dataset access and deterministic lexical scoring for EnronQA."""
+"""Dataset access and LLM answer evaluation for EnronQA."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

@@ -67,7 +67,7 @@ def test_invalid_utf8_cli_has_full_json_errors(tmp_path, monkeypatch, stdin):
     path.write_bytes(data)
     result = CliRunner().invoke(
         app,
-        ["score", "-" if stdin else str(path), "--set", "test"],
+        ["validate", "-" if stdin else str(path), "--set", "test"],
         input=data if stdin else None,
     )
     assert result.exit_code == 2

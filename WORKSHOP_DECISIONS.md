@@ -135,4 +135,5 @@ See SPEC.md and README.md for the intended interface. Track runtime changes in
 [issue #4](https://github.com/dorkitude/EnronQA-cli/issues/4) and
 [issue #5](https://github.com/dorkitude/EnronQA-cli/issues/5). Per the user's
 explicit instruction, README examples describe this interface without marking
-it upcoming; the open implementation issues record the remaining work.
+it upcoming; the linked issues record implementation and verification. Version 0.2.0
+implements the agreed judge interface.

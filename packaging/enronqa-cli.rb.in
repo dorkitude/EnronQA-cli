@@ -1,8 +1,8 @@
 class EnronqaCli < Formula
-  desc "EnronQA dataset access and reproducible lexical answer evaluation"
+  desc "EnronQA dataset access and reproducible LLM answer evaluation"
   homepage "https://github.com/dorkitude/EnronQA-cli"
   url "@URL@"
-  version "0.1.0"
+  version "0.2.0"
   sha256 "@SHA256@"
   license "MIT"
 
@@ -20,8 +20,8 @@ class EnronqaCli < Formula
   end
 
   test do
-    assert_match "0.1.0", shell_output("#{bin}/enronqa --version")
+    assert_match "0.2.0", shell_output("#{bin}/enronqa --version")
     assert_match "fetch", shell_output("#{bin}/enronqa --help")
-    assert_match "I don't know", shell_output("#{bin}/enronqa instructions")
+    assert_match "nonblank string answer", shell_output("#{bin}/enronqa instructions")
   end
 end

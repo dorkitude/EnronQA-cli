@@ -64,7 +64,7 @@ def main() -> None:
             "Maintainer: Kyle Wild <kyle@kylewild.com>\nSection: science\nPriority: optional\n"
             "Depends: libc6 (>= 2.35), libgcc-s1, libstdc++6, zlib1g, ca-certificates\n"
             f"Installed-Size: {size}\nHomepage: https://github.com/dorkitude/EnronQA-cli\n"
-            "Description: Reproducible EnronQA dataset and lexical evaluation CLI\n"
+            "Description: Reproducible EnronQA dataset and LLM evaluation CLI\n"
             " Bundles an isolated Python runtime and dependencies. Dataset fetched separately.\n"
         )
         docs = root / "usr/share/doc/enronqa-cli"

@@ -4,8 +4,8 @@ The README defines the intended interface from the September 11, 2026
 README-first workshop. Implementation work is tracked in
 [LLM judging #4](https://github.com/dorkitude/EnronQA-cli/issues/4) and
 [external judge inputs #5](https://github.com/dorkitude/EnronQA-cli/issues/5).
-The v0.1.0 release predates this judge-based design; do not treat these issues
-as implemented until their acceptance criteria pass.
+Version 0.2.0 implements this design. Its regression tests exercise the API
+protocol against a local HTTP server; live provider checks require credentials.
 
 ## Confirmed behavior
 
