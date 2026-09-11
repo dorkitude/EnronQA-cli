@@ -60,7 +60,7 @@ Exact coverage and all tables: AGGREGATES.md §B (regenerated from the cache).
 <!-- AUTO:coverage -->
 **Reviewed so far: 9,338 of 528,304 questions (1.8%)** from 1,343 of 73,772 emails
 (train 5,834/333,473 = 1.7%; dev 1,891/105,515 = 1.8%; test 1,613/89,316 = 1.8%).
-Generated 2026-09-11 14:12 UTC from `aggregates.json`. The remaining 518,966 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
+Generated 2026-09-11 14:42 UTC from `aggregates.json`. The remaining 518,966 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
 
 | Verdict | n | share of reviewed |
 |---|---|---|
