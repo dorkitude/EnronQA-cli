@@ -25,6 +25,10 @@ older open questions there. Implementation remains pending spec agreement.
   batch with an error and nonzero exit status. Do not grade a valid subset or
   emit partial scores. Missing questions remain a warning, not a validation
   error.
+- Provide a standalone `validate` command to check a JSONL batch without
+  grading it. It uses the same validation rules as the grading preflight,
+  including selected-set membership, duplicate detection, and incomplete
+  coverage warnings.
 
 ## Latest source decisions
 
