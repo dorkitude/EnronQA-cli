@@ -13,6 +13,13 @@ Status: workshopping with Kyle Wild; implementation has not been approved to beg
 - JSON output is an option.
 - Saving output to a file is an explicit option.
 - Question retrieval excludes the reference answer by default; `--include-answer` explicitly includes it. This is a convenience for test-taking workflows, not a security boundary.
+- Batch grading returns JSON containing overall accuracy, per-question correct/incorrect results, and relevant evaluation context.
+- Grade only questions included in the submitted batch. Missing questions do not count as incorrect or enter the accuracy denominator.
+- Issue an incompleteness warning when the batch does not cover the expected question set. Include the warning in the JSON report so stdout remains valid JSON. Coverage counts should distinguish submitted questions from the expected total. The default reference set for completeness remains to be decided.
+
+### Proposed batch report fields (not yet agreed)
+
+Report schema, dataset revision, split/subset, CLI/scorer versions, scoring settings, counts and explicit accuracy denominator; per-question IDs/text, submitted/reference answers, verdicts, comparison details, source email IDs, and errors. Exact schemas and invalid/duplicate-answer handling remain open.
 
 - Dataset: the EnronQA benchmark on Hugging Face, `MichaelR207/enron_qa_0922`, pinned to revision `c0b3a9190fd970e83cfbe7d399a08860e43e221e` (last modified 2024-09-22). Every question in every split is in scope: 333,473 train, 105,515 dev, 89,316 test, 528,304 total (verified locally; matches the paper).
 - Data handling: raw Enron email text and detailed source-derived artifacts (per-question ledgers containing email or answer text) stay local and git-ignored. Only scripts and aggregate reports are published. No transformed dataset is redistributed until upstream licensing is settled (see `audit/report/LICENSING.md`).
@@ -39,3 +46,7 @@ Kyle requested a public MIT Go/Cobra CLI and asked to workshop its specification
 On whether individual checks should accumulate into named runs, Kyle chose: "stateless, just stdout (with json as an option and saving as another option)".
 
 Kyle confirmed question-only retrieval by default, with `--include-answer` to reveal the reference answer.
+
+Kyle chose overall accuracy plus per-question results: "the latter. it should be a JSON that includes all the info which may be relevant."
+
+On incomplete batches: "only the ones it contains; but it should issue a warning that the queiton-answer set is incomplete."
