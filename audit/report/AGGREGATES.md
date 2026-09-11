@@ -75,11 +75,11 @@ Distractor length minus gold length (words), quantiles: p10=-8, p25=-2, p50=+3, 
 
 ### B1. Verdict by split
 
-| verdict | dev | test | train | total | % reviewed |
+| verdict | train | dev | test | total | % reviewed |
 |---|---|---|---|---|---|
-| convertible | 1403 | 1190 | 4299 | 6892 | 73.8 |
-| unconvertible | 242 | 246 | 867 | 1355 | 14.5 |
-| convertible_rewrite | 246 | 177 | 668 | 1091 | 11.7 |
+| convertible | 4299 | 1403 | 1190 | 6892 | 73.8 |
+| unconvertible | 867 | 242 | 246 | 1355 | 14.5 |
+| convertible_rewrite | 668 | 246 | 177 | 1091 | 11.7 |
 
 ### B2. Answer schema category by verdict
 
@@ -105,11 +105,11 @@ Distractor length minus gold length (words), quantiles: p10=-8, p25=-2, p50=+3, 
 
 ### B3. Reviewer confidence by verdict
 
-| verdict | medium | high | low |
+| verdict | high | medium | low |
 |---|---|---|---|
-| convertible | 1469 | 5399 | 24 |
-| convertible_rewrite | 862 | 199 | 30 |
-| unconvertible | 752 | 594 | 9 |
+| convertible | 5399 | 1469 | 24 |
+| convertible_rewrite | 199 | 862 | 30 |
+| unconvertible | 594 | 752 | 9 |
 
 ### B4. Flags (share of reviewed items carrying each flag)
 
