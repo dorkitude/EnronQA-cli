@@ -11,7 +11,7 @@ while true; do
   ( cd .. && git add audit/report/AGGREGATES.md audit/report/aggregates.json audit/report/semantic_status.json \
       && git diff --cached --quiet || { git commit -q -m "Checkpoint semantic review aggregates ($(jq -r .questions_parsed audit/report/semantic_status.json) questions reviewed)
 
-Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>" && (git pull -q --rebase origin main && git push -q origin main || git rebase --abort 2>/dev/null); } )
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>" && (git pull -q --rebase --autostash origin main && git push -q origin main || git rebase --abort 2>/dev/null); } )
   echo "$(date -u +%FT%TZ) checkpoint: $(jq -c . report/semantic_status.json)"
   planned=$(ls work/batches | wc -l); done_n=$(ls cache/reviews | wc -l)
   [ "$done_n" -ge "$planned" ] && { echo "all done"; break; }
