@@ -61,6 +61,13 @@ older open questions there. Implementation remains pending spec agreement.
   coverage counts and the warning in the JSON report.
 - Duplicate question IDs in a batch are a validation error, including when
   the submitted answers are identical.
+- Use the reserved answer string `I don't know` to express abstention; no
+  separate boolean or status input field is required. An abstention is a valid
+  submission, counts as incorrect in overall accuracy, stays in the accuracy
+  denominator, and is identified as an abstention in the report.
+- Missing or blank answers are validation errors. `N/A` is not a reserved
+  abstention marker, since it could be a substantive answer. Exact matching
+  and normalization rules for the reserved string remain to be finalized.
 - Batch validation collects and reports all detectable input problems in a
   single pass, with JSONL line numbers and question IDs where available,
   rather than stopping at the first invalid entry. Malformed lines must not
