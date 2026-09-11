@@ -1,7 +1,8 @@
 # CLI workshop decisions
 
-These user-confirmed decisions supplement SPEC.md and take precedence over
-older open questions there. Implementation remains pending spec agreement.
+These workshop decisions are reflected in SPEC.md and the README. The latest
+README-first judge design supersedes earlier lexical-scoring proposals;
+implementation is tracked in CLI issues #4 and #5.
 
 - Python and Typer; public `dorkitude/EnronQA-cli` repository, MIT license.
   This supersedes the earlier Go/Cobra requirement. Prioritize compatibility
@@ -67,10 +68,8 @@ older open questions there. Implementation remains pending spec agreement.
 - Preserve extra fields from submitted records (for example reasoning or
   latency) in the report, without using them for grading. Keep submitted
   metadata separate from grader-generated fields to avoid name collisions.
-- Universal substring matching is not an agreed scoring rule. It can accept
-  negated or contradictory responses that contain the expected text. Exact
-  matching, normalization, and any optional substring mode remain proposals
-  pending the audit and further scoring decisions.
+- Judge answer correctness using the EnronQA methodology with configurable
+  LLM-as-judge and external-program integration; do not use substring matching.
 - Score only submitted questions. Missing questions do not count as incorrect
   and do not enter the accuracy denominator.
 - Users choose the question set. Support `all` as a selection.
@@ -92,13 +91,8 @@ older open questions there. Implementation remains pending spec agreement.
   coverage counts and the warning in the JSON report.
 - Duplicate question IDs in a batch are a validation error, including when
   the submitted answers are identical.
-- Use the reserved answer string `I don't know` to express abstention; no
-  separate boolean or status input field is required. An abstention is a valid
-  submission, counts as incorrect in overall accuracy, stays in the accuracy
-  denominator, and is identified as an abstention in the report.
-- Missing or blank answers are validation errors. `N/A` is not a reserved
-  abstention marker, since it could be a substantive answer. Exact matching
-  and normalization rules for the reserved string remain to be finalized.
+- There are no reserved answer strings or abstention flags. All nonblank
+  answers are judged normally. Missing or blank answers are validation errors.
 - Batch validation collects and reports all detectable input problems in a
   single pass, with JSONL line numbers and question IDs where available,
   rather than stopping at the first invalid entry. Malformed lines must not
@@ -122,7 +116,23 @@ On selecting sets: "CLI needs to let you choose, yes; and if you are doing
 batch, the quesitons all have to live iwthin the set you chose (unless you
 chose \"all\")"
 
-## Still open
+## README-first decisions
 
-Exact command names, JSON schemas, default/required set selection, validation
-error report details, and deterministic answer conversion and scoring policies.
+The user requested a concise introduction explaining and citing EnronQA, then
+short usage examples (with an installation link) before installation, followed
+by complete command/option tables. Include external judge piping and built-in
+OpenAI-compatible judging, using Fireworks DeepSeek V4 Flash in the example.
+
+Built-in judge output is binary JSON, with richer prompt/output only under
+`--verbose`. `--judge-prompt FILE` overrides instructions and conflicts with
+built-in prompt configuration. Custom output must be pure JSON but has no
+required correctness fields; place it under `judgment` in the CLI envelope.
+Retry twice, then record failures; stop scheduling after five consecutive
+questions exhaust retries. Keep failed/unprocessed counts separate from
+accuracy. There are no special abstention strings or fields.
+
+See SPEC.md and README.md for the intended interface. Track runtime changes in
+[issue #4](https://github.com/dorkitude/EnronQA-cli/issues/4) and
+[issue #5](https://github.com/dorkitude/EnronQA-cli/issues/5). Per the user's
+explicit instruction, README examples describe this interface without marking
+it upcoming; the open implementation issues record the remaining work.
