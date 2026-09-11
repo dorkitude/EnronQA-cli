@@ -27,6 +27,25 @@ this spec is agreed.
    (see `audit/report/LICENSING.md`).
 6. **Tooling.** Python audit code runs under `uv`. Item-level semantic review
    uses Claude Fable through `claude -p`.
+7. **Interfaces.** Support batch grading from a JSONL input file and granular,
+   call-as-needed question retrieval and answer checking. This does not imply
+   launching user systems or calling HTTP endpoints.
+8. **Stateless output.** No implicit runs, history, or accumulated scores.
+   Output goes to stdout; JSON output and explicit file saving are supported.
+9. **Question lookup.** Hide reference answers by default; `--include-answer`
+   reveals them. This is a convenience, not a security boundary.
+10. **Batch report.** Return JSON containing overall accuracy and per-question
+    correct/incorrect results, with all relevant evaluation information.
+    Kyle: "the latter. it should be a JSON that includes all the info which
+    may be relevant."
+
+### Proposed report details (not yet agreed)
+
+Include schema/CLI/scorer versions, pinned dataset revision, evaluated subset,
+scoring settings, summary counts and explicit accuracy denominator. Per item,
+include question ID/text, submitted/reference answers, verdict, comparison
+details, source email ID, and errors. Handling missing/invalid answers and
+embedding full source emails remain undecided.
 
 ## Undecided (proposals only, see the audit report)
 
@@ -36,7 +55,7 @@ this spec is agreed.
   supported evaluation mode, given that it changes the task.
 - Scoring function(s): exact match after normalization, set/list scoring,
   partial credit for multi-field answers, evidence-offset checks.
-- CLI command surface, input/output formats, and how reformulated items are
+- CLI command names, exact JSONL/JSON schemas, and how reformulated items are
   stored and versioned.
 - Which subset of items (if any) is excluded as unconvertible, and the
   acceptance criteria for a reformulated item.
