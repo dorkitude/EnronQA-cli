@@ -5,6 +5,11 @@ older open questions there. Implementation remains pending spec agreement.
 
 - Go and Cobra; public `dorkitude/EnronQA-cli` repository, MIT license.
 - Batch grading accepts JSONL; granular operations support call-as-needed use.
+- Export the selected question set as JSONL for a user's system to consume.
+  Include stable question IDs for matching submitted answers to questions.
+  As with individual question lookup, omit reference answers by default and
+  include them only with `--include-answer`. Support stdout and explicit file
+  saving.
 - Stateless: stdout by default, optional JSON and explicit file saving.
 - Question lookup hides reference answers unless `--include-answer` is used.
 - Batch reports are JSON with overall accuracy, per-question results, and
