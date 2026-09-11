@@ -12,6 +12,10 @@ older open questions there. Implementation remains pending spec agreement.
   saving.
 - Stateless: stdout by default, optional JSON and explicit file saving.
 - Question lookup hides reference answers unless `--include-answer` is used.
+- Question export omits the source email by default, so systems must retrieve
+  evidence themselves. `--include-source` attaches the correct source email
+  for debugging or evaluating answer generation with known evidence. This is
+  independent of `--include-answer` and must not implicitly expose the answer.
 - Batch reports are JSON with overall accuracy, per-question results, and
   relevant evaluation details.
 - Score only submitted questions. Missing questions do not count as incorrect
