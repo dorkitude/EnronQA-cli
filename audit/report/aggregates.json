@@ -1,0 +1,117 @@
+{
+ "total_questions": 528304,
+ "per_split": {
+  "train": 333473,
+  "dev": 105515,
+  "test": 89316
+ },
+ "screen": {
+  "gold_yes_no": {
+   "train": 0.00205114057210029,
+   "dev": 0.001980761029237549,
+   "test": 0.0022392404496394823
+  },
+  "gold_date_textual": {
+   "train": 0.10125257517100335,
+   "dev": 0.10288584561436763,
+   "test": 0.10346410497559227
+  },
+  "gold_time": {
+   "train": 0.05255298030125378,
+   "dev": 0.05530967161067147,
+   "test": 0.054794213802678134
+  },
+  "gold_money": {
+   "train": 0.046897350010345666,
+   "dev": 0.0431313083447851,
+   "test": 0.04394509382417484
+  },
+  "gold_verbatim_in_email": {
+   "train": 0.0741469324353096,
+   "dev": 0.06106240818840923,
+   "test": 0.0626987325899055
+  },
+  "gold_lcs_ge_0.8": {
+   "train": 0.08724244541537096,
+   "dev": 0.07345874994076672,
+   "test": 0.07473465000671772
+  },
+  "q_according": {
+   "train": 0.6852548782060317,
+   "dev": 0.6819693882386391,
+   "test": 0.6806507232746652
+  },
+  "inc_hedge_any": {
+   "train": 0.1019512824126691,
+   "dev": 0.09892432355589252,
+   "test": 0.09985892785167272
+  },
+  "inc_anachronism_any": {
+   "train": 0.07090229193967727,
+   "dev": 0.073818888309719,
+   "test": 0.07385015002911012
+  }
+ },
+ "semantic": {
+  "reviewed_questions": 405,
+  "reviewed_per_split": {
+   "train": 250,
+   "dev": 82,
+   "test": 73
+  },
+  "reviewed_emails": 60,
+  "coverage_pct": 0.0766604076440837,
+  "verdict_counts": {
+   "convertible": 309,
+   "unconvertible": 63,
+   "convertible_rewrite": 33
+  },
+  "cat_counts": {
+   "entity": 70,
+   "free_text": 63,
+   "span": 56,
+   "list": 51,
+   "multi_field": 45,
+   "person": 32,
+   "org": 21,
+   "date": 16,
+   "money": 9,
+   "number": 9,
+   "place": 8,
+   "email_addr": 7,
+   "datetime": 6,
+   "percent": 5,
+   "duration": 3,
+   "bool": 3,
+   "time": 1
+  },
+  "flag_counts": {
+   "mcq_leak_style": 101,
+   "normalization_risk": 93,
+   "mcq_leak_hedge": 54,
+   "mcq_leak_anachron": 49,
+   "boilerplate": 37,
+   "ambiguous_question": 22,
+   "multi_valid_alias": 16,
+   "vague_gold": 16,
+   "answer_in_question": 10,
+   "gold_unsupported": 4,
+   "gold_wrong": 4,
+   "mcq_incorrect_actually_correct": 3
+  },
+  "conf_counts": [
+   {
+    "conf": "low",
+    "len": 2
+   },
+   {
+    "conf": "high",
+    "len": 274
+   },
+   {
+    "conf": "medium",
+    "len": 129
+   }
+  ]
+ }
+}

@@ -1,0 +1,482 @@
+{
+ "gold_yes_no": {
+  "dev": {
+   "n": 209,
+   "pct": 0.2
+  },
+  "test": {
+   "n": 200,
+   "pct": 0.2
+  },
+  "train": {
+   "n": 684,
+   "pct": 0.2
+  }
+ },
+ "gold_date_textual": {
+  "dev": {
+   "n": 10856,
+   "pct": 10.3
+  },
+  "test": {
+   "n": 9241,
+   "pct": 10.3
+  },
+  "train": {
+   "n": 33765,
+   "pct": 10.1
+  }
+ },
+ "gold_date_numeric": {
+  "dev": {
+   "n": 1956,
+   "pct": 1.9
+  },
+  "test": {
+   "n": 1593,
+   "pct": 1.8
+  },
+  "train": {
+   "n": 6023,
+   "pct": 1.8
+  }
+ },
+ "gold_time": {
+  "dev": {
+   "n": 5836,
+   "pct": 5.5
+  },
+  "test": {
+   "n": 4894,
+   "pct": 5.5
+  },
+  "train": {
+   "n": 17525,
+   "pct": 5.3
+  }
+ },
+ "gold_money": {
+  "dev": {
+   "n": 4551,
+   "pct": 4.3
+  },
+  "test": {
+   "n": 3925,
+   "pct": 4.4
+  },
+  "train": {
+   "n": 15639,
+   "pct": 4.7
+  }
+ },
+ "gold_percent": {
+  "dev": {
+   "n": 1399,
+   "pct": 1.3
+  },
+  "test": {
+   "n": 1194,
+   "pct": 1.3
+  },
+  "train": {
+   "n": 5250,
+   "pct": 1.6
+  }
+ },
+ "gold_email_addr": {
+  "dev": {
+   "n": 2101,
+   "pct": 2.0
+  },
+  "test": {
+   "n": 1753,
+   "pct": 2.0
+  },
+  "train": {
+   "n": 6743,
+   "pct": 2.0
+  }
+ },
+ "gold_url": {
+  "dev": {
+   "n": 2141,
+   "pct": 2.0
+  },
+  "test": {
+   "n": 1729,
+   "pct": 1.9
+  },
+  "train": {
+   "n": 6735,
+   "pct": 2.0
+  }
+ },
+ "gold_phone": {
+  "dev": {
+   "n": 4443,
+   "pct": 4.2
+  },
+  "test": {
+   "n": 3909,
+   "pct": 4.4
+  },
+  "train": {
+   "n": 12651,
+   "pct": 3.8
+  }
+ },
+ "gold_quote": {
+  "dev": {
+   "n": 12079,
+   "pct": 11.4
+  },
+  "test": {
+   "n": 9974,
+   "pct": 11.2
+  },
+  "train": {
+   "n": 39815,
+   "pct": 11.9
+  }
+ },
+ "gold_hedge": {
+  "dev": {
+   "n": 750,
+   "pct": 0.7
+  },
+  "test": {
+   "n": 632,
+   "pct": 0.7
+  },
+  "train": {
+   "n": 2493,
+   "pct": 0.7
+  }
+ },
+ "gold_verbatim_in_email": {
+  "dev": {
+   "n": 6443,
+   "pct": 6.1
+  },
+  "test": {
+   "n": 5600,
+   "pct": 6.3
+  },
+  "train": {
+   "n": 24726,
+   "pct": 7.4
+  }
+ },
+ "alt_verbatim_in_email": {
+  "dev": {
+   "n": 2523,
+   "pct": 2.4
+  },
+  "test": {
+   "n": 2178,
+   "pct": 2.4
+  },
+  "train": {
+   "n": 10388,
+   "pct": 3.1
+  }
+ },
+ "gold_numbers_all_in_email": {
+  "dev": {
+   "n": 26171,
+   "pct": 24.8
+  },
+  "test": {
+   "n": 22207,
+   "pct": 24.9
+  },
+  "train": {
+   "n": 83464,
+   "pct": 25.0
+  }
+ },
+ "q_according": {
+  "dev": {
+   "n": 71958,
+   "pct": 68.2
+  },
+  "test": {
+   "n": 60793,
+   "pct": 68.1
+  },
+  "train": {
+   "n": 228514,
+   "pct": 68.5
+  }
+ },
+ "q_multi_wh": {
+  "dev": {
+   "n": 10685,
+   "pct": 10.1
+  },
+  "test": {
+   "n": 8999,
+   "pct": 10.1
+  },
+  "train": {
+   "n": 37232,
+   "pct": 11.2
+  }
+ },
+ "inc_hedge_any": {
+  "dev": {
+   "n": 10438,
+   "pct": 9.9
+  },
+  "test": {
+   "n": 8919,
+   "pct": 10.0
+  },
+  "train": {
+   "n": 33998,
+   "pct": 10.2
+  }
+ },
+ "inc_anachronism_any": {
+  "dev": {
+   "n": 7789,
+   "pct": 7.4
+  },
+  "test": {
+   "n": 6596,
+   "pct": 7.4
+  },
+  "train": {
+   "n": 23644,
+   "pct": 7.1
+  }
+ },
+ "inc_shares_gold_numbers_any": {
+  "dev": {
+   "n": 6465,
+   "pct": 6.1
+  },
+  "test": {
+   "n": 5421,
+   "pct": 6.1
+  },
+  "train": {
+   "n": 20882,
+   "pct": 6.3
+  }
+ },
+ "inc_any_in_email_lcs_gt_half": {
+  "dev": {
+   "n": 2980,
+   "pct": 2.8
+  },
+  "test": {
+   "n": 2617,
+   "pct": 2.9
+  },
+  "train": {
+   "n": 10484,
+   "pct": 3.1
+  }
+ },
+ "alt_equals_gold": {
+  "dev": {
+   "n": 13952,
+   "pct": 13.2
+  },
+  "test": {
+   "n": 11916,
+   "pct": 13.3
+  },
+  "train": {
+   "n": 43444,
+   "pct": 13.0
+  }
+ },
+ "q_type": [
+  {
+   "q_type": "how",
+   "dev": 912,
+   "test": 782,
+   "train": 2786
+  },
+  {
+   "q_type": "how long",
+   "dev": 392,
+   "test": 300,
+   "train": 1068
+  },
+  {
+   "q_type": "how many",
+   "dev": 238,
+   "test": 194,
+   "train": 793
+  },
+  {
+   "q_type": "how much",
+   "dev": 330,
+   "test": 261,
+   "train": 1100
+  },
+  {
+   "q_type": "how often",
+   "dev": 97,
+   "test": 74,
+   "train": 302
+  },
+  {
+   "q_type": "other",
+   "dev": 6393,
+   "test": 5434,
+   "train": 20751
+  },
+  {
+   "q_type": "what",
+   "dev": 82679,
+   "test": 69894,
+   "train": 264057
+  },
+  {
+   "q_type": "when",
+   "dev": 613,
+   "test": 594,
+   "train": 1942
+  },
+  {
+   "q_type": "where",
+   "dev": 1209,
+   "test": 1074,
+   "train": 3600
+  },
+  {
+   "q_type": "which",
+   "dev": 932,
+   "test": 858,
+   "train": 2855
+  },
+  {
+   "q_type": "who",
+   "dev": 9906,
+   "test": 8213,
+   "train": 29104
+  },
+  {
+   "q_type": "whom",
+   "dev": 0,
+   "test": 0,
+   "train": 2
+  },
+  {
+   "q_type": "whose",
+   "dev": 138,
+   "test": 118,
+   "train": 352
+  },
+  {
+   "q_type": "why",
+   "dev": 1429,
+   "test": 1291,
+   "train": 3974
+  },
+  {
+   "q_type": "yes_no_aux",
+   "dev": 247,
+   "test": 229,
+   "train": 787
+  }
+ ],
+ "gold_number_count_dist": [
+  {
+   "gold_number_count": 0,
+   "len": 381941
+  },
+  {
+   "gold_number_count": 1,
+   "len": 80124
+  },
+  {
+   "gold_number_count": 2,
+   "len": 48691
+  },
+  {
+   "gold_number_count": 3,
+   "len": 11310
+  },
+  {
+   "gold_number_count": 4,
+   "len": 3552
+  },
+  {
+   "gold_number_count": 5,
+   "len": 1477
+  },
+  {
+   "gold_number_count": 6,
+   "len": 664
+  },
+  {
+   "gold_number_count": 7,
+   "len": 221
+  }
+ ],
+ "gold_lcs_ratio_quantiles": {
+  "0.1": 0.118,
+  "0.25": 0.167,
+  "0.5": 0.25,
+  "0.75": 0.4,
+  "0.9": 0.688
+ },
+ "gold_lcs_ratio_ge_0.8": {
+  "dev": {
+   "n": 7751,
+   "pct": 7.3
+  },
+  "test": {
+   "n": 6675,
+   "pct": 7.5
+  },
+  "train": {
+   "n": 29093,
+   "pct": 8.7
+  }
+ },
+ "gold_words_quantiles": {
+  "0.1": 8.0,
+  "0.5": 19.0,
+  "0.9": 34.0,
+  "0.99": 55.0
+ },
+ "gold_numbers_missing_from_email_gt0": {
+  "dev": {
+   "n": 2896,
+   "pct": 2.7
+  },
+  "test": {
+   "n": 2440,
+   "pct": 2.7
+  },
+  "train": {
+   "n": 9185,
+   "pct": 2.8
+  }
+ },
+ "gold_caps_in_email_ratio_lt_0.5": {
+  "dev": {
+   "n": 1525,
+   "pct": 1.5
+  },
+  "test": {
+   "n": 1301,
+   "pct": 1.5
+  },
+  "train": {
+   "n": 4781,
+   "pct": 1.5
+  }
+ },
+ "inc_words_mean_minus_gold_words_quantiles": {
+  "0.1": -8.0,
+  "0.5": 3.0,
+  "0.9": 15.0
+ }
+}

@@ -76,7 +76,7 @@ def run_one(bfile: Path):
         return bfile.stem, "cached"
     batch = json.loads(bfile.read_text())
     text, n = render(batch)
-    cmd = ["claude", "-p", "--bare", "--no-session-persistence", "--model", MODEL, "--effort", EFFORT,
+    cmd = ["claude", "-p", "--no-session-persistence", "--model", MODEL, "--effort", EFFORT,
            "--output-format", "json", "--tools", "", "--system-prompt", PROMPT]
     t0 = time.time()
     try:
@@ -94,6 +94,13 @@ def run_one(bfile: Path):
     idx = {it["i"]: it["qid"] for e in batch for it in e["items"]}
     for it in rec["items"]:
         it["qid"] = idx.get(it.get("i"))
+    # transient failures (auth, rate limit, empty result) are NOT cached so they are retried on the next run
+    blob = (rec.get("raw_result") or "") + (rec.get("stderr") or "")
+    transient = rec["returncode"] != 0 or rec["parse_error"] == "timeout" or (not rec["items"] and re.search(
+        r"rate.?limit|usage limit|overloaded|Not logged in|429|529|network|ECONN|timed out", blob, re.I))
+    if transient:
+        (WORK / "failures.log").open("a").write(json.dumps({"batch": bfile.stem, "t": time.time(), "rc": rec["returncode"], "err": rec["parse_error"], "msg": blob[:300]}) + "\n")
+        return bfile.stem, f"TRANSIENT rc={rec['returncode']} err={rec['parse_error']} msg={blob[:120]!r}"
     out.write_text(json.dumps(rec, ensure_ascii=False))
     return bfile.stem, f"ok n={n} parsed={len(rec['items'])} err={rec['parse_error']} {rec['elapsed_s']}s"
 
@@ -117,11 +124,28 @@ def run(workers: int, limit: int | None):
     todo = [f for f in files if not (REV_DIR / (f.stem + ".json")).exists()]
     if limit:
         todo = todo[:limit]
-    print(f"{len(files)} batches, {len(files) - len(todo)} done, running {len(todo)} with {workers} workers", flush=True)
+    print(f"{len(files)} batches planned, {len(list(REV_DIR.glob('*.json')))} done, running {len(todo)} now with {workers} workers", flush=True)
+    consecutive_fail = 0
+    stop = False
+    def guarded(f):
+        nonlocal consecutive_fail, stop
+        if stop:
+            return f.stem, "skipped (circuit open)"
+        stem, msg = run_one(f)
+        if msg.startswith("TRANSIENT"):
+            consecutive_fail += 1
+            if consecutive_fail >= 12:
+                stop = True
+            time.sleep(min(300, 15 * consecutive_fail))
+        else:
+            consecutive_fail = 0
+        return stem, msg
     with ThreadPoolExecutor(workers) as ex:
-        futs = [ex.submit(run_one, f) for f in todo]
+        futs = [ex.submit(guarded, f) for f in todo]
         for fut in as_completed(futs):
-            print(*fut.result(), flush=True)
+            print(time.strftime("%H:%M:%S"), *fut.result(), flush=True)
+    if stop:
+        print("CIRCUIT OPEN: 12 consecutive transient failures; stopped. Re-run to resume.", flush=True)
 
 
 def status():
