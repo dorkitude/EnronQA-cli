@@ -234,31 +234,10 @@ Exports stream records. Batch validation retains submissions and grading retains
 a complete report in memory; very large batches therefore require memory
 proportional to their answer and metadata size. There is no implicit saved run.
 
-## Research audit
-
-[Issue #1](https://github.com/dorkitude/EnronQA-cli/issues/1) tracks the audit of
-whether questions can support faithful deterministic evaluation. This research
-does not authorize replacing original questions in the CLI's standard export.
-See [audit/report](audit/report) for findings and coverage limitations.
-
-Audit scripts are separate Python tooling, run with `uv`:
-
-```bash
-cd audit
-uv sync
-bash scripts/00_download.sh
-uv run scripts/01_enumerate.py
-uv run scripts/02_screen.py
-uv run scripts/03_semantic_review.py --help
-uv run scripts/04_aggregate.py
-```
-
-Raw data and source-derived per-question ledgers remain local and git-ignored.
-
 ## License and attribution
 
 Repository code is MIT licensed. That license does not cover the EnronQA
-dataset or underlying email corpus; see [licensing findings](audit/report/LICENSING.md).
+dataset or underlying email corpus; see [licensing findings](docs/DATASET_LICENSING.md).
 
 Benchmark: Michael J. Ryan, Danmei Xu, Chris Nivera, and Daniel Campos.
 [EnronQA: Towards Personalized RAG over Private Documents](https://arxiv.org/abs/2505.00263), 2025.
