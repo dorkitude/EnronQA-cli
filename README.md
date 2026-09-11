@@ -37,6 +37,21 @@ enronqa score answers.jsonl --set test --output report.json
 The CLI does not launch your system or manage experiment runs. Dataset caching
 is local setup; evaluation calls do not accumulate answer history or scores.
 
+### Optional corpus sharding
+
+Single-file (or stdout) JSONL is the default and can be read one email at a
+time. For smaller imports and transfers, optionally split the corpus into
+multiple files:
+
+```bash
+enronqa documents export --shard-size 1000 --output-dir emails/
+```
+
+This writes up to 1,000 emails per numbered JSONL file, plus a manifest with
+the dataset revision, per-file counts, and checksums. It does not create one
+file per email. Sharded export follows the same early output-conflict checks
+and explicit overwrite policy. Flag names and manifest schema are proposals.
+
 ## Answer files
 
 Proposed JSONL format: one answer per line, identified by question ID. These IDs

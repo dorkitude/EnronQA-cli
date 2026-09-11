@@ -18,6 +18,13 @@ older open questions there. Implementation remains pending spec agreement.
 - Provide a separate JSONL export of the entire email corpus for indexing in
   external systems, with stable document IDs and email text. Support stdout
   and explicit file saving. Exact metadata fields remain to be specified.
+- Corpus export optionally supports sharding by documents per JSONL file;
+  single-stream/single-file JSONL remains the default. Illustrative flags:
+  `--shard-size 1000 --output-dir emails/`. Each shard contains up to the
+  requested number of emails, rather than one file per email. Use numbered
+  shard files and a manifest with dataset revision, per-file counts, and
+  checksums. Exact flags and manifest schema remain proposals. Apply early
+  output-conflict validation and explicit overwrite rules to sharded output.
 - Support lookup of an individual email by stable document ID, returning its
   email text and available metadata. Follow the stateless stdout, optional
   JSON, and explicit file-saving conventions. Exact command name remains open.
