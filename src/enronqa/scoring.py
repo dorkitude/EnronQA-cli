@@ -27,7 +27,9 @@ def check_json_values(value):
     while pending:
         item = pending.pop()
         if isinstance(item, str):
-            item.encode("utf-8")  # JSON escape syntax can otherwise hide lone surrogates.
+            item.encode(
+                "utf-8"
+            )  # JSON escape syntax can otherwise hide lone surrogates.
         elif isinstance(item, float) and not math.isfinite(item):
             raise ValueError("JSON numbers must be finite")
         elif isinstance(item, dict):

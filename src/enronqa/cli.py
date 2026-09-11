@@ -297,7 +297,9 @@ def batch(input_path, selection, output_path, force, data_dir, scorer=None):
         preflight(output_path, force)
         with Dataset(data_dir) as dataset:
             if input_path == "-":
-                records, report = validation(getattr(sys.stdin, "buffer", sys.stdin), dataset, selection)
+                records, report = validation(
+                    getattr(sys.stdin, "buffer", sys.stdin), dataset, selection
+                )
             else:
                 with open(input_path, "rb") as stream:
                     records, report = validation(stream, dataset, selection)

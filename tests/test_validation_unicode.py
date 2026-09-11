@@ -1,4 +1,5 @@
 """Malformed bytes and ambiguous JSON must never produce partial grades."""
+
 import json
 
 import pytest
@@ -23,22 +24,35 @@ class TinyDataset:
 
     def question(self, question_id):
         if question_id == "q1":
-            return {"question_id": "q1", "split": "test", "document_id": "d1",
-                    "question": "Approved?", "answer": "yes", "alternate_answers": []}
+            return {
+                "question_id": "q1",
+                "split": "test",
+                "document_id": "d1",
+                "question": "Approved?",
+                "answer": "yes",
+                "alternate_answers": [],
+            }
 
 
-@pytest.mark.parametrize("bad", [
-    b'\xff',
-    b'{"question_id":"q1","answer":"\\ud800"}',
-    b'{"question_id":"q1","answer":"yes","metadata":{"\\udfff":1}}',
-    b'{"question_id":"missing","question_id":"q1","answer":"yes"}',
-    b'{"question_id":"q1","answer":"no","answer":"yes"}',
-    b'{"question_id":"q1","answer":"yes","metadata":{"x":1,"x":2}}',
-    b'{"question_id":"q1","answer":"yes","latency":1e999}',
-    b'[' * 2000 + b']' * 2000,
-])
+@pytest.mark.parametrize(
+    "bad",
+    [
+        b"\xff",
+        b'{"question_id":"q1","answer":"\\ud800"}',
+        b'{"question_id":"q1","answer":"yes","metadata":{"\\udfff":1}}',
+        b'{"question_id":"missing","question_id":"q1","answer":"yes"}',
+        b'{"question_id":"q1","answer":"no","answer":"yes"}',
+        b'{"question_id":"q1","answer":"yes","metadata":{"x":1,"x":2}}',
+        b'{"question_id":"q1","answer":"yes","latency":1e999}',
+        b"[" * 2000 + b"]" * 2000,
+    ],
+)
 def test_reject_bad_record_and_continue(bad):
-    _, report = validation([bad, b'not json', b'{"question_id":"q1","answer":"yes"}'], TinyDataset(), "test")
+    _, report = validation(
+        [bad, b"not json", b'{"question_id":"q1","answer":"yes"}'],
+        TinyDataset(),
+        "test",
+    )
     assert not report["valid"]
     assert [error["line"] for error in report["errors"]] == [1, 2]
     assert report["coverage"]["submitted"] == 1
@@ -51,7 +65,11 @@ def test_invalid_utf8_cli_has_full_json_errors(tmp_path, monkeypatch, stdin):
     data = b'{"question_id":"q1","answer":"yes"}\n\xff\nnot json\n'
     path = tmp_path / "answers.jsonl"
     path.write_bytes(data)
-    result = CliRunner().invoke(app, ["score", "-" if stdin else str(path), "--set", "test"], input=data if stdin else None)
+    result = CliRunner().invoke(
+        app,
+        ["score", "-" if stdin else str(path), "--set", "test"],
+        input=data if stdin else None,
+    )
     assert result.exit_code == 2
     report = json.loads(result.stdout)
     assert [error["line"] for error in report["errors"]] == [2, 3]
