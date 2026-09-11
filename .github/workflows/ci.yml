@@ -28,3 +28,17 @@ jobs:
           uv pip install --python /tmp/enronqa-wheel/bin/python dist/*.whl
           /tmp/enronqa-wheel/bin/enronqa --help
           /tmp/enronqa-wheel/bin/enronqa instructions
+  homebrew:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install and test local formula
+        shell: bash
+        run: |
+          git archive --format=tar.gz --prefix=enronqa-cli/ HEAD > /tmp/enronqa-cli.tar.gz
+          brew tap-new --no-git dorkitude/enronqa-ci
+          formula_dir="$(brew --repository)/Library/Taps/dorkitude/homebrew-enronqa-ci/Formula"
+          mkdir -p "$formula_dir"
+          sed -e 's|@URL@|file:///tmp/enronqa-cli.tar.gz|' -e "s|@SHA256@|$(shasum -a 256 /tmp/enronqa-cli.tar.gz | cut -d ' ' -f 1)|" packaging/enronqa-cli.rb.in > "$formula_dir/enronqa-cli.rb"
+          brew install --build-from-source dorkitude/enronqa-ci/enronqa-cli
+          brew test dorkitude/enronqa-ci/enronqa-cli
