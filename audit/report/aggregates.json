@@ -69,12 +69,12 @@
   },
   "prompt_versions": [
    {
-    "prompt_sha": "f6421e7c11",
-    "len": 2925
-   },
-   {
     "prompt_sha": "v1-no-narrowed",
     "len": 4120
+   },
+   {
+    "prompt_sha": "f6421e7c11",
+    "len": 2925
    }
   ],
   "verdict_counts": {
@@ -117,16 +117,16 @@
   },
   "conf_counts": [
    {
+    "conf": "medium",
+    "len": 2329
+   },
+   {
     "conf": "high",
     "len": 4667
    },
    {
     "conf": "low",
     "len": 49
-   },
-   {
-    "conf": "medium",
-    "len": 2329
    }
   ]
  }
