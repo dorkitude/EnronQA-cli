@@ -53,64 +53,64 @@
   }
  },
  "semantic": {
-  "reviewed_questions": 2256,
+  "reviewed_questions": 2636,
   "reviewed_per_split": {
-   "train": 1420,
-   "dev": 448,
-   "test": 388
+   "train": 1663,
+   "dev": 525,
+   "test": 448
   },
-  "reviewed_emails": 304,
-  "coverage_pct": 0.42702686332111817,
+  "reviewed_emails": 356,
+  "coverage_pct": 0.4989551470365547,
   "verdict_counts": {
-   "convertible": 1664,
-   "unconvertible": 336,
-   "convertible_rewrite": 256
+   "convertible": 1923,
+   "unconvertible": 406,
+   "convertible_rewrite": 307
   },
   "cat_counts": {
-   "entity": 398,
-   "free_text": 348,
-   "span": 301,
-   "list": 249,
-   "multi_field": 235,
-   "person": 189,
-   "date": 122,
-   "org": 98,
-   "money": 61,
-   "place": 53,
-   "datetime": 45,
-   "number": 36,
-   "duration": 31,
-   "email_addr": 30,
+   "entity": 457,
+   "free_text": 421,
+   "span": 337,
+   "list": 306,
+   "multi_field": 261,
+   "person": 218,
+   "date": 139,
+   "org": 119,
+   "money": 70,
+   "place": 69,
+   "datetime": 54,
+   "number": 50,
+   "duration": 37,
+   "email_addr": 33,
+   "bool": 26,
    "time": 24,
-   "bool": 22,
-   "percent": 14
+   "percent": 15
   },
   "flag_counts": {
-   "mcq_leak_style": 535,
-   "normalization_risk": 466,
-   "mcq_leak_hedge": 269,
-   "mcq_leak_anachron": 229,
-   "boilerplate": 147,
-   "ambiguous_question": 124,
-   "vague_gold": 107,
-   "multi_valid_alias": 90,
-   "answer_in_question": 65,
-   "gold_unsupported": 58,
-   "mcq_incorrect_actually_correct": 51,
-   "gold_wrong": 24
+   "mcq_leak_style": 608,
+   "normalization_risk": 546,
+   "mcq_leak_hedge": 306,
+   "mcq_leak_anachron": 276,
+   "boilerplate": 169,
+   "ambiguous_question": 146,
+   "vague_gold": 121,
+   "multi_valid_alias": 107,
+   "answer_in_question": 73,
+   "gold_unsupported": 66,
+   "mcq_incorrect_actually_correct": 64,
+   "gold_wrong": 27
   },
   "conf_counts": [
    {
-    "conf": "medium",
-    "len": 736
-   },
-   {
     "conf": "high",
-    "len": 1498
+    "len": 1761
    },
    {
     "conf": "low",
-    "len": 22
+    "len": 23
+   },
+   {
+    "conf": "medium",
+    "len": 852
    }
   ]
  }
