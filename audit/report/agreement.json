@@ -5,17 +5,17 @@
  "convertible_vs_unconvertible_agreement": 0.9551357733175915,
  "canon_exact_agreement": 0.7626918536009445,
  "verdict_agreement_by_conf_a": {
-  "low": {
-   "n": 7,
-   "agree": 0.5714285714285714
+  "high": {
+   "n": 564,
+   "agree": 0.9769503546099291
   },
   "medium": {
    "n": 276,
    "agree": 0.7644927536231884
   },
-  "high": {
-   "n": 564,
-   "agree": 0.9769503546099291
+  "low": {
+   "n": 7,
+   "agree": 0.5714285714285714
   }
  },
  "confusion_verdict": [
