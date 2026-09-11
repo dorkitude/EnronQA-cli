@@ -117,16 +117,16 @@
   },
   "conf_counts": [
    {
-    "conf": "high",
-    "len": 6192
-   },
-   {
     "conf": "medium",
     "len": 3083
    },
    {
     "conf": "low",
     "len": 63
+   },
+   {
+    "conf": "high",
+    "len": 6192
    }
   ]
  }

@@ -144,19 +144,19 @@ Distractor length minus gold length (words), quantiles: p10=-8, p25=-2, p50=+3, 
 
 ### B6. Verdict for question types
 
-| q_type | convertible | unconvertible | convertible_rewrite | total | % unconvertible |
+| q_type | convertible | convertible_rewrite | unconvertible | total | % unconvertible |
 |---|---|---|---|---|---|
-| what | 5241 | 1168 | 915 | 7324 | 15.9 |
-| who | 792 | 14 | 57 | 863 | 1.6 |
-| other | 470 | 62 | 51 | 583 | 10.6 |
-| why | 41 | 79 | 24 | 144 | 54.9 |
-| where | 98 | 3 | 10 | 111 | 2.7 |
-| how | 32 | 25 | 22 | 79 | 31.6 |
-| which | 65 | 1 | 3 | 69 | 1.4 |
-| when | 48 | 2 | 5 | 55 | 3.6 |
-| how long | 30 | 0 | 3 | 33 | 0.0 |
-| yes_no_aux | 26 | 1 | 0 | 27 | 3.7 |
-| how much | 24 | 0 | 1 | 25 | 0.0 |
+| what | 5241 | 915 | 1168 | 7324 | 15.9 |
+| who | 792 | 57 | 14 | 863 | 1.6 |
+| other | 470 | 51 | 62 | 583 | 10.6 |
+| why | 41 | 24 | 79 | 144 | 54.9 |
+| where | 98 | 10 | 3 | 111 | 2.7 |
+| how | 32 | 22 | 25 | 79 | 31.6 |
+| which | 65 | 3 | 1 | 69 | 1.4 |
+| when | 48 | 5 | 2 | 55 | 3.6 |
+| how long | 30 | 3 | 0 | 33 | 0.0 |
+| yes_no_aux | 26 | 0 | 1 | 27 | 3.7 |
+| how much | 24 | 1 | 0 | 25 | 0.0 |
 | how many | 16 | 0 | 0 | 16 | 0.0 |
 | how often | 5 | 0 | 0 | 5 | 0.0 |
 | whose | 4 | 0 | 0 | 4 | 0.0 |
