@@ -40,6 +40,13 @@ older open questions there. Implementation remains pending spec agreement.
   independent of `--include-answer` and must not implicitly expose the answer.
 - Batch reports are JSON with overall accuracy, per-question results, and
   relevant evaluation details.
+- Preserve extra fields from submitted records (for example reasoning or
+  latency) in the report, without using them for grading. Keep submitted
+  metadata separate from grader-generated fields to avoid name collisions.
+- Universal substring matching is not an agreed scoring rule. It can accept
+  negated or contradictory responses that contain the expected text. Exact
+  matching, normalization, and any optional substring mode remain proposals
+  pending the audit and further scoring decisions.
 - Score only submitted questions. Missing questions do not count as incorrect
   and do not enter the accuracy denominator.
 - Users choose the question set. Support `all` as a selection.
