@@ -40,6 +40,11 @@ older open questions there. Implementation remains pending spec agreement.
 - Score only submitted questions. Missing questions do not count as incorrect
   and do not enter the accuracy denominator.
 - Users choose the question set. Support `all` as a selection.
+- Batch grading and standalone validation require an explicit `--set`.
+  There is no implicit default. If omitted, fail during preflight with an
+  explanation and the available choices (`train`, `dev`, `test`, `all`).
+  Individual question lookup and answer checking use the question ID alone
+  and do not require `--set`.
 - Every question in a submitted batch must belong to the selected set.
   Out-of-set questions are a validation error, not silently ignored or scored.
   Selecting `all` permits questions from any dataset set; it does not make
