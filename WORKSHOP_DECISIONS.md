@@ -5,6 +5,9 @@ older open questions there. Implementation remains pending spec agreement.
 
 - Go and Cobra; public `dorkitude/EnronQA-cli` repository, MIT license.
 - Batch grading accepts JSONL; granular operations support call-as-needed use.
+- Provide a separate JSONL export of the entire email corpus for indexing in
+  external systems, with stable document IDs and email text. Support stdout
+  and explicit file saving. Exact metadata fields remain to be specified.
 - Export the selected question set as JSONL for a user's system to consume.
   Include stable question IDs for matching submitted answers to questions.
   As with individual question lookup, omit reference answers by default and
