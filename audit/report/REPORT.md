@@ -58,18 +58,19 @@ Detailed tables: A1–A4.
 Exact coverage and all tables: AGGREGATES.md §B (regenerated from the cache).
 
 <!-- AUTO:coverage -->
-**Reviewed so far: 3,326 of 528,304 questions (0.6%)** from 459 of 73,772 emails
-(train 2,091/333,473 = 0.6%; dev 666/105,515 = 0.6%; test 569/89,316 = 0.6%).
-Generated 2026-09-11 07:41 UTC from `aggregates.json`. The remaining 524,978 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
+**Reviewed so far: 7,045 of 528,304 questions (1.3%)** from 1,007 of 73,772 emails
+(train 4,403/333,473 = 1.3%; dev 1,421/105,515 = 1.3%; test 1,221/89,316 = 1.4%).
+Generated 2026-09-11 08:11 UTC from `aggregates.json`. The remaining 521,259 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
 
 | Verdict | n | share of reviewed |
 |---|---|---|
-| convertible (as asked) | 2,434 | 73.2% |
-| convertible after question rewrite | 381 | 11.5% |
-| unconvertible (needs judge or task change) | 511 | 15.4% |
+| convertible (as asked) | 5,164 | 73.3% |
+| convertible after question rewrite | 831 | 11.8% |
+| unconvertible (needs judge or task change) | 1,050 | 14.9% |
 
-Most frequent schema categories: `entity` 17.0%, `free_text` 16.0%, `span` 13.2%, `list` 11.9%, `multi_field` 9.7%, `person` 7.8%, `date` 5.5%, `org` 4.7%.
-Most frequent flags: `mcq_leak_style` 23.8%, `normalization_risk` 20.4%, `mcq_leak_hedge` 11.1%, `mcq_leak_anachron` 10.5%, `boilerplate` 6.4%, `ambiguous_question` 5.8%.
+Most frequent schema categories: `entity` 17.7%, `free_text` 15.9%, `span` 13.6%, `list` 11.3%, `multi_field` 10.0%, `person` 7.3%, `date` 4.9%, `org` 4.9%.
+Rewrites that narrow the original information need (drop a sub-question): 176 of 831 rewrite items (454 reviewed before the marker existed).
+Most frequent flags: `mcq_leak_style` 24.1%, `normalization_risk` 20.1%, `mcq_leak_hedge` 11.4%, `mcq_leak_anachron` 9.9%, `boilerplate` 5.6%, `ambiguous_question` 5.4%.
 <!-- /AUTO:coverage -->
 
 Narrative interpretation of the reviewed set follows.
@@ -114,16 +115,16 @@ Conclusion: the supplied distractors can seed an MCQ mode but need filtering (dr
 ## 7. Label reliability (second pass)
 
 <!-- AUTO:agreement -->
-Second pass at effort `medium` over 150 already-reviewed items (same model, independent call):
+Second pass at effort `medium` over 847 already-reviewed items (same model, independent call):
 
 | Measure | agreement |
 |---|---|
-| schema category identical | 94.0% |
-| verdict identical (3-way) | 90.0% |
-| convertible-vs-unconvertible identical | 95.3% |
-| canonical answer byte-identical (case-folded) | 78.7% |
+| schema category identical | 90.9% |
+| verdict identical (3-way) | 90.4% |
+| convertible-vs-unconvertible identical | 95.5% |
+| canonical answer byte-identical (case-folded) | 76.3% |
 
-Verdict agreement by first-pass confidence: medium: 74% (n=42), high: 96% (n=108).
+Verdict agreement by first-pass confidence: high: 98% (n=564), low: 57% (n=7), medium: 76% (n=276).
 This measures self-consistency of the Fable labels, not agreement with humans. Canonical answers vary in surface form far more than categories do, which is itself evidence that per-item normalization rules and alias lists are required before deterministic scoring.
 <!-- /AUTO:agreement -->
 
@@ -158,6 +159,7 @@ Drawn from the reviewed set (IDs are `split/path/qidx`; the underlying emails ar
 - Stage 3 labels come from one model family at low effort; §7 measures self-consistency, not human agreement. No human item-level review was performed.
 - Coverage of stage 3 is exactly what §5 / AGGREGATES §B state. Percentages there describe the reviewed sample; the sample is uniform over emails by construction but is still a sample until coverage reaches 100%.
 - Emails longer than 12,000 characters were clipped in the reviewer prompt (flagged in the batch files); items whose evidence lies beyond the clip may be misjudged.
+- Two prompt versions were used: the first 99 batches (about 4,000 questions) ran before the `narrowed` marker for question rewrites existed and are counted as "unknown" in AGGREGATES B7; every cached batch records its prompt hash.
 - The `include_email` field is undocumented; its meaning was not inferred.
 - Stage-2 regexes are deliberately simple; they are screening signals, not labels.
 - Licensing of the dataset is unresolved (LICENSING.md); nothing derived from item text is published here beyond the short examples in §9.
