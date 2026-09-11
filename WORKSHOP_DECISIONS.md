@@ -34,6 +34,15 @@ older open questions there. Implementation remains pending spec agreement.
   truncate the existing file before successful output is ready. Preserve
   no-clobber protection at final write as well, to handle concurrent changes.
 - Question lookup hides reference answers unless `--include-answer` is used.
+- Question text must remain clean and match the pinned upstream EnronQA
+  wording. Do not append answer-format instructions or silently replace it
+  with reformulated questions in lookup/export.
+- Provide a separate command to fetch answer-format and grading instructions
+  for experimenters to incorporate into a system prompt or other setup.
+  Exact command name and whether instructions are global, per-question, or
+  both remain open. Instructions must not disclose reference answers.
+- The reformulation audit remains research input; it does not authorize
+  replacing original EnronQA questions in the CLI's standard question set.
 - Question export omits the source email by default, so systems must retrieve
   evidence themselves. `--include-source` attaches the correct source email
   for debugging or evaluating answer generation with known evidence. This is
