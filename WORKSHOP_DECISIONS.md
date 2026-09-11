@@ -20,6 +20,11 @@ older open questions there. Implementation remains pending spec agreement.
   coverage counts and the warning in the JSON report.
 - Duplicate question IDs in a batch are a validation error, including when
   the submitted answers are identical.
+- Validate the entire batch before grading begins. Malformed JSONL, invalid
+  records, unknown question IDs, out-of-set IDs, and duplicate IDs reject the
+  batch with an error and nonzero exit status. Do not grade a valid subset or
+  emit partial scores. Missing questions remain a warning, not a validation
+  error.
 
 ## Latest source decisions
 
@@ -32,6 +37,5 @@ chose \"all\")"
 
 ## Still open
 
-Exact command names, JSON schemas, default/required set selection, handling of
-malformed inputs, and deterministic answer conversion
-and scoring policies.
+Exact command names, JSON schemas, default/required set selection, validation
+error report details, and deterministic answer conversion and scoring policies.
