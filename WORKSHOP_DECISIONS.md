@@ -40,6 +40,11 @@ older open questions there. Implementation remains pending spec agreement.
 - Score only submitted questions. Missing questions do not count as incorrect
   and do not enter the accuracy denominator.
 - Users choose the question set. Support `all` as a selection.
+- Question export supports reproducible random sampling within the selected
+  set, using a sample-size option and seed (illustratively `--limit 100
+  --seed 42`). Identical dataset revision, selected set, sample size, and seed
+  must produce identical question selections and ordering. Exact flag names
+  and seed defaults remain to be finalized.
 - Batch grading and standalone validation require an explicit `--set`.
   There is no implicit default. If omitted, fail during preflight with an
   explanation and the available choices (`train`, `dev`, `test`, `all`).
