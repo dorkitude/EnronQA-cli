@@ -13,14 +13,15 @@ uv run --no-project python packaging/build_deb.py --wheel dist/enronqa_cli-0.1.0
 
 The amd64 `.deb` includes CPython 3.12.14 and hash-pinned Python dependencies in
 `/opt/enronqa-cli`. `apt install ./enronqa-cli_0.1.0_amd64.deb` installs it without
-running package-manager network operations as root or modifying system Python.
+post-install Python downloads or modifying system Python. Apt may fetch OS
+dependencies through the configured Ubuntu repositories.
 Supported target: Ubuntu 22.04 or newer on amd64. Other systems use the wheel.
 The package retains interpreter/dependency license files. Rebuild releases to
 update the bundled runtime and dependencies; they are not upgraded by Ubuntu's
 system-Python updates.
 
 Homebrew packaging lives in `dorkitude/homebrew-tap`. The formula installs the
-release wheel into an isolated environment using Homebrew Python and uv with
+release source into an isolated environment using Homebrew Python and uv with
 hash-pinned dependency requirements. The tap is separate from Homebrew core.
 
 Before publication: test the built wheel in a fresh environment; install the

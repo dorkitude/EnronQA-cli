@@ -29,17 +29,18 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="enronqa-deb-") as tmp:
         work = Path(tmp)
         managed = work / "managed"
-        run("uv", "python", "install", args.python, "--install-dir", str(managed))
-        interpreters = list(managed.glob("cpython-*-linux-x86_64-gnu"))
+        run("uv", "python", "install", args.python, "--install-dir", str(managed), "--no-bin")
+        interpreters = [p for p in managed.glob("cpython-*-linux-x86_64-gnu") if not p.is_symlink()]
         if len(interpreters) != 1:
             raise RuntimeError("Expected one Linux amd64 standalone interpreter")
         root = work / "root"
         home = root / "opt/enronqa-cli"
         shutil.copytree(interpreters[0], home, symlinks=True)
         python = home / "bin/python3"
-        run("uv", "pip", "install", "--python", str(python), "--require-hashes",
+        # This is our private staging copy, never the host or uv's cached runtime.
+        run("uv", "pip", "install", "--python", str(python), "--break-system-packages", "--require-hashes",
             "-r", "packaging/requirements-release.txt")
-        run("uv", "pip", "install", "--python", str(python), "--no-deps", str(args.wheel.resolve()))
+        run("uv", "pip", "install", "--python", str(python), "--break-system-packages", "--no-deps", str(args.wheel.resolve()))
         # Entry-point shebangs contain staging paths; wrapper uses python -m.
         bindir = root / "usr/bin"
         bindir.mkdir(parents=True)
