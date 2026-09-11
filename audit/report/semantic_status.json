@@ -1,9 +1,9 @@
 {
   "batches_planned": 12598,
-  "batches_done": 167,
+  "batches_done": 185,
   "batches_with_parse_error": 0,
   "questions_planned": 528304,
-  "questions_in_done_batches": 7045,
-  "questions_parsed": 7045,
-  "mean_batch_seconds": 52.9
+  "questions_in_done_batches": 7823,
+  "questions_parsed": 7823,
+  "mean_batch_seconds": 53.1
 }

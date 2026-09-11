@@ -53,80 +53,80 @@
   }
  },
  "semantic": {
-  "reviewed_questions": 7045,
+  "reviewed_questions": 7798,
   "reviewed_per_split": {
-   "train": 4403,
-   "dev": 1421,
-   "test": 1221
+   "train": 4866,
+   "dev": 1582,
+   "test": 1350
   },
-  "reviewed_emails": 1007,
-  "coverage_pct": 1.3335125230927647,
+  "reviewed_emails": 1122,
+  "coverage_pct": 1.4760440958236167,
   "narrowed": {
-   "rewrite_items": 831,
-   "narrowed_true": 176,
-   "narrowed_false": 201,
+   "rewrite_items": 909,
+   "narrowed_true": 212,
+   "narrowed_false": 243,
    "narrowed_unknown_old_prompt": 454
   },
   "prompt_versions": [
    {
-    "prompt_sha": "v1-no-narrowed",
-    "len": 4120
+    "prompt_sha": "f6421e7c11",
+    "len": 3678
    },
    {
-    "prompt_sha": "f6421e7c11",
-    "len": 2925
+    "prompt_sha": "v1-no-narrowed",
+    "len": 4120
    }
   ],
   "verdict_counts": {
-   "convertible": 5164,
-   "unconvertible": 1050,
-   "convertible_rewrite": 831
+   "convertible": 5745,
+   "unconvertible": 1144,
+   "convertible_rewrite": 909
   },
   "cat_counts": {
-   "entity": 1244,
-   "free_text": 1120,
-   "span": 961,
-   "list": 799,
-   "multi_field": 707,
-   "person": 514,
-   "date": 348,
-   "org": 347,
-   "place": 184,
-   "money": 179,
-   "datetime": 156,
-   "number": 139,
-   "duration": 88,
-   "email_addr": 76,
-   "bool": 73,
-   "time": 65,
-   "percent": 45
+   "entity": 1396,
+   "free_text": 1225,
+   "span": 1056,
+   "list": 885,
+   "multi_field": 790,
+   "person": 576,
+   "date": 386,
+   "org": 367,
+   "money": 204,
+   "place": 204,
+   "datetime": 174,
+   "number": 146,
+   "duration": 100,
+   "email_addr": 83,
+   "bool": 78,
+   "time": 77,
+   "percent": 51
   },
   "flag_counts": {
-   "mcq_leak_style": 1699,
-   "normalization_risk": 1414,
-   "mcq_leak_hedge": 800,
-   "mcq_leak_anachron": 699,
-   "boilerplate": 394,
-   "ambiguous_question": 382,
-   "vague_gold": 352,
-   "multi_valid_alias": 293,
-   "answer_in_question": 199,
-   "mcq_incorrect_actually_correct": 180,
-   "gold_unsupported": 166,
-   "gold_wrong": 47
+   "mcq_leak_style": 1868,
+   "normalization_risk": 1575,
+   "mcq_leak_hedge": 894,
+   "mcq_leak_anachron": 770,
+   "boilerplate": 435,
+   "ambiguous_question": 412,
+   "vague_gold": 400,
+   "multi_valid_alias": 319,
+   "answer_in_question": 217,
+   "mcq_incorrect_actually_correct": 203,
+   "gold_unsupported": 185,
+   "gold_wrong": 52
   },
   "conf_counts": [
    {
-    "conf": "medium",
-    "len": 2329
-   },
-   {
     "conf": "high",
-    "len": 4667
+    "len": 5182
    },
    {
     "conf": "low",
-    "len": 49
+    "len": 53
+   },
+   {
+    "conf": "medium",
+    "len": 2563
    }
   ]
  }

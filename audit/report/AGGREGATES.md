@@ -71,97 +71,97 @@ Distractor length minus gold length (words), quantiles: p10=-8, p25=-2, p50=+3, 
 
 ## B. Item-level semantic review (Claude Fable, `claude -p`)
 
-**Coverage: 7,045 of 528,304 questions (1.33%)**, from 1,007 of 73,772 emails; per split: train 4,403/333,473, dev 1,421/105,515, test 1,221/89,316. Emails were processed in a fixed-seed shuffled order, so the reviewed set is a uniform sample of emails, not a hand-picked one. Every percentage in this section is relative to the reviewed set only.
+**Coverage: 7,798 of 528,304 questions (1.48%)**, from 1,122 of 73,772 emails; per split: train 4,866/333,473, dev 1,582/105,515, test 1,350/89,316. Emails were processed in a fixed-seed shuffled order, so the reviewed set is a uniform sample of emails, not a hand-picked one. Every percentage in this section is relative to the reviewed set only.
 
 ### B1. Verdict by split
 
 | verdict | train | dev | test | total | % reviewed |
 |---|---|---|---|---|---|
-| convertible | 3228 | 1043 | 893 | 5164 | 73.3 |
-| unconvertible | 668 | 189 | 193 | 1050 | 14.9 |
-| convertible_rewrite | 507 | 189 | 135 | 831 | 11.8 |
+| convertible | 3578 | 1176 | 991 | 5745 | 73.7 |
+| unconvertible | 735 | 203 | 206 | 1144 | 14.7 |
+| convertible_rewrite | 553 | 203 | 153 | 909 | 11.7 |
 
 ### B2. Answer schema category by verdict
 
 | cat | convertible | convertible_rewrite | unconvertible | total | % reviewed |
 |---|---|---|---|---|---|
-| entity | 1138 | 100 | 6 | 1244 | 17.7 |
-| free_text | 4 | 135 | 981 | 1120 | 15.9 |
-| span | 811 | 140 | 10 | 961 | 13.6 |
-| list | 635 | 133 | 31 | 799 | 11.3 |
-| multi_field | 575 | 114 | 18 | 707 | 10.0 |
-| person | 484 | 29 | 1 | 514 | 7.3 |
-| date | 324 | 24 | 0 | 348 | 4.9 |
-| org | 320 | 27 | 0 | 347 | 4.9 |
-| place | 166 | 17 | 1 | 184 | 2.6 |
-| money | 163 | 15 | 1 | 179 | 2.5 |
-| datetime | 150 | 6 | 0 | 156 | 2.2 |
-| number | 115 | 24 | 0 | 139 | 2.0 |
-| duration | 80 | 7 | 1 | 88 | 1.2 |
-| email_addr | 74 | 2 | 0 | 76 | 1.1 |
-| bool | 23 | 50 | 0 | 73 | 1.0 |
-| time | 61 | 4 | 0 | 65 | 0.9 |
-| percent | 41 | 4 | 0 | 45 | 0.6 |
+| entity | 1283 | 107 | 6 | 1396 | 17.9 |
+| free_text | 4 | 154 | 1067 | 1225 | 15.7 |
+| span | 899 | 147 | 10 | 1056 | 13.5 |
+| list | 698 | 151 | 36 | 885 | 11.3 |
+| multi_field | 647 | 123 | 20 | 790 | 10.1 |
+| person | 542 | 33 | 1 | 576 | 7.4 |
+| date | 356 | 29 | 1 | 386 | 4.9 |
+| org | 340 | 27 | 0 | 367 | 4.7 |
+| money | 187 | 16 | 1 | 204 | 2.6 |
+| place | 186 | 17 | 1 | 204 | 2.6 |
+| datetime | 167 | 7 | 0 | 174 | 2.2 |
+| number | 121 | 25 | 0 | 146 | 1.9 |
+| duration | 91 | 8 | 1 | 100 | 1.3 |
+| email_addr | 81 | 2 | 0 | 83 | 1.1 |
+| bool | 24 | 54 | 0 | 78 | 1.0 |
+| time | 73 | 4 | 0 | 77 | 1.0 |
+| percent | 46 | 5 | 0 | 51 | 0.7 |
 
 ### B3. Reviewer confidence by verdict
 
-| verdict | medium | high | low |
+| verdict | high | medium | low |
 |---|---|---|---|
-| convertible | 1095 | 4054 | 15 |
-| convertible_rewrite | 647 | 158 | 26 |
-| unconvertible | 587 | 455 | 8 |
+| convertible | 4517 | 1210 | 18 |
+| convertible_rewrite | 171 | 711 | 27 |
+| unconvertible | 494 | 642 | 8 |
 
 ### B4. Flags (share of reviewed items carrying each flag)
 
 | flags | n | % reviewed |
 |---|---|---|
-| mcq_leak_style | 1699 | 24.1 |
-| normalization_risk | 1414 | 20.1 |
-| mcq_leak_hedge | 800 | 11.4 |
-| mcq_leak_anachron | 699 | 9.9 |
-| boilerplate | 394 | 5.6 |
-| ambiguous_question | 382 | 5.4 |
-| vague_gold | 352 | 5.0 |
-| multi_valid_alias | 293 | 4.2 |
-| answer_in_question | 199 | 2.8 |
-| mcq_incorrect_actually_correct | 180 | 2.6 |
-| gold_unsupported | 166 | 2.4 |
-| gold_wrong | 47 | 0.7 |
+| mcq_leak_style | 1868 | 24.0 |
+| normalization_risk | 1575 | 20.2 |
+| mcq_leak_hedge | 894 | 11.5 |
+| mcq_leak_anachron | 770 | 9.9 |
+| boilerplate | 435 | 5.6 |
+| ambiguous_question | 412 | 5.3 |
+| vague_gold | 400 | 5.1 |
+| multi_valid_alias | 319 | 4.1 |
+| answer_in_question | 217 | 2.8 |
+| mcq_incorrect_actually_correct | 203 | 2.6 |
+| gold_unsupported | 185 | 2.4 |
+| gold_wrong | 52 | 0.7 |
 
 ### B5. Regex surface signal vs semantic category (does surface detection predict the schema?)
 
 | surface feature | target cats | feature fires | precision % (fires -> cat) | recall % (cat -> fires) | fires but unconvertible % |
 |---|---|---|---|---|---|
-| gold_date_textual | date/datetime | 699 | 48.2 | 66.9 | 6.2 |
-| gold_date_numeric | date/datetime | 115 | 53.9 | 12.3 | 4.3 |
-| gold_time | time/datetime | 351 | 56.4 | 89.6 | 2.0 |
-| gold_money | money | 311 | 53.4 | 92.7 | 9.6 |
-| gold_percent | percent | 96 | 42.7 | 91.1 | 6.2 |
-| gold_email_addr | email_addr | 149 | 50.3 | 98.7 | 2.0 |
-| gold_yes_no | bool | 21 | 100.0 | 28.8 | 0.0 |
-| gold_verbatim_in_email | span | 482 | 10.2 | 5.1 | 0.8 |
-| q_multi_wh | multi_field/list | 768 | 60.3 | 30.7 | 16.7 |
+| gold_date_textual | date/datetime | 777 | 48.5 | 67.3 | 5.8 |
+| gold_date_numeric | date/datetime | 131 | 54.2 | 12.7 | 4.6 |
+| gold_time | time/datetime | 390 | 57.4 | 89.2 | 1.8 |
+| gold_money | money | 346 | 54.3 | 92.2 | 9.2 |
+| gold_percent | percent | 112 | 42.0 | 92.2 | 8.0 |
+| gold_email_addr | email_addr | 165 | 49.7 | 98.8 | 1.8 |
+| gold_yes_no | bool | 22 | 100.0 | 28.2 | 0.0 |
+| gold_verbatim_in_email | span | 510 | 10.2 | 4.9 | 0.8 |
+| q_multi_wh | multi_field/list | 843 | 60.1 | 30.3 | 17.0 |
 
 ### B6. Verdict for question types
 
-| q_type | unconvertible | convertible | convertible_rewrite | total | % unconvertible |
+| q_type | convertible | unconvertible | convertible_rewrite | total | % unconvertible |
 |---|---|---|---|---|---|
-| what | 906 | 3947 | 710 | 5563 | 16.3 |
-| who | 11 | 605 | 39 | 655 | 1.7 |
-| other | 40 | 343 | 36 | 419 | 9.5 |
-| why | 68 | 30 | 14 | 112 | 60.7 |
-| where | 3 | 67 | 8 | 78 | 3.8 |
-| how | 20 | 23 | 14 | 57 | 35.1 |
-| which | 1 | 41 | 2 | 44 | 2.3 |
-| when | 1 | 32 | 5 | 38 | 2.6 |
-| how long | 0 | 23 | 2 | 25 | 0.0 |
-| yes_no_aux | 0 | 23 | 0 | 23 | 0.0 |
-| how much | 0 | 17 | 1 | 18 | 0.0 |
-| how many | 0 | 7 | 0 | 7 | 0.0 |
-| how often | 0 | 4 | 0 | 4 | 0.0 |
-| whose | 0 | 2 | 0 | 2 | 0.0 |
+| what | 4381 | 991 | 778 | 6150 | 16.1 |
+| who | 670 | 12 | 41 | 723 | 1.7 |
+| other | 385 | 43 | 39 | 467 | 9.2 |
+| why | 33 | 71 | 18 | 122 | 58.2 |
+| where | 75 | 3 | 8 | 86 | 3.5 |
+| how | 27 | 21 | 14 | 62 | 33.9 |
+| which | 49 | 1 | 2 | 52 | 1.9 |
+| when | 39 | 2 | 5 | 46 | 4.3 |
+| how long | 27 | 0 | 3 | 30 | 0.0 |
+| yes_no_aux | 24 | 0 | 0 | 24 | 0.0 |
+| how much | 21 | 0 | 1 | 22 | 0.0 |
+| how many | 7 | 0 | 0 | 7 | 0.0 |
+| how often | 4 | 0 | 0 | 4 | 0.0 |
+| whose | 3 | 0 | 0 | 3 | 0.0 |
 
 ### B7. Question rewrites that narrow the information need
 
-Of 831 `convertible_rewrite` items: narrowed = 176, not narrowed = 201, unknown (reviewed before the `narrowed` field was added to the prompt) = 454.
+Of 909 `convertible_rewrite` items: narrowed = 212, not narrowed = 243, unknown (reviewed before the `narrowed` field was added to the prompt) = 454.
 

@@ -58,19 +58,19 @@ Detailed tables: A1–A4.
 Exact coverage and all tables: AGGREGATES.md §B (regenerated from the cache).
 
 <!-- AUTO:coverage -->
-**Reviewed so far: 7,045 of 528,304 questions (1.3%)** from 1,007 of 73,772 emails
-(train 4,403/333,473 = 1.3%; dev 1,421/105,515 = 1.3%; test 1,221/89,316 = 1.4%).
-Generated 2026-09-11 11:41 UTC from `aggregates.json`. The remaining 521,259 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
+**Reviewed so far: 7,798 of 528,304 questions (1.5%)** from 1,122 of 73,772 emails
+(train 4,866/333,473 = 1.5%; dev 1,582/105,515 = 1.5%; test 1,350/89,316 = 1.5%).
+Generated 2026-09-11 12:11 UTC from `aggregates.json`. The remaining 520,506 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
 
 | Verdict | n | share of reviewed |
 |---|---|---|
-| convertible (as asked) | 5,164 | 73.3% |
-| convertible after question rewrite | 831 | 11.8% |
-| unconvertible (needs judge or task change) | 1,050 | 14.9% |
+| convertible (as asked) | 5,745 | 73.7% |
+| convertible after question rewrite | 909 | 11.7% |
+| unconvertible (needs judge or task change) | 1,144 | 14.7% |
 
-Most frequent schema categories: `entity` 17.7%, `free_text` 15.9%, `span` 13.6%, `list` 11.3%, `multi_field` 10.0%, `person` 7.3%, `date` 4.9%, `org` 4.9%.
-Rewrites that narrow the original information need (drop a sub-question): 176 of 831 rewrite items (454 reviewed before the marker existed).
-Most frequent flags: `mcq_leak_style` 24.1%, `normalization_risk` 20.1%, `mcq_leak_hedge` 11.4%, `mcq_leak_anachron` 9.9%, `boilerplate` 5.6%, `ambiguous_question` 5.4%.
+Most frequent schema categories: `entity` 17.9%, `free_text` 15.7%, `span` 13.5%, `list` 11.3%, `multi_field` 10.1%, `person` 7.4%, `date` 4.9%, `org` 4.7%.
+Rewrites that narrow the original information need (drop a sub-question): 212 of 909 rewrite items (454 reviewed before the marker existed).
+Most frequent flags: `mcq_leak_style` 24.0%, `normalization_risk` 20.2%, `mcq_leak_hedge` 11.5%, `mcq_leak_anachron` 9.9%, `boilerplate` 5.6%, `ambiguous_question` 5.3%.
 <!-- /AUTO:coverage -->
 
 Narrative interpretation of the reviewed set follows.
@@ -124,7 +124,7 @@ Second pass at effort `medium` over 847 already-reviewed items (same model, inde
 | convertible-vs-unconvertible identical | 95.5% |
 | canonical answer byte-identical (case-folded) | 76.3% |
 
-Verdict agreement by first-pass confidence: low: 57% (n=7), high: 98% (n=564), medium: 76% (n=276).
+Verdict agreement by first-pass confidence: low: 57% (n=7), medium: 76% (n=276), high: 98% (n=564).
 This measures self-consistency of the Fable labels, not agreement with humans. Canonical answers vary in surface form far more than categories do, which is itself evidence that per-item normalization rules and alias lists are required before deterministic scoring.
 <!-- /AUTO:agreement -->
 
