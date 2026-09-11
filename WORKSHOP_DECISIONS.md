@@ -12,6 +12,9 @@ older open questions there. Implementation remains pending spec agreement.
   (for example network, disk space, or integrity verification) and provide an
   actionable next step without claiming the dataset is ready.
 - Batch grading accepts JSONL; granular operations support call-as-needed use.
+- Batch grading and standalone validation accept JSONL from stdin using `-`
+  in place of a filename. Stdin input follows the same full-batch validation
+  rules: consume and validate the complete input before grading begins.
 - Provide a separate JSONL export of the entire email corpus for indexing in
   external systems, with stable document IDs and email text. Support stdout
   and explicit file saving. Exact metadata fields remain to be specified.
