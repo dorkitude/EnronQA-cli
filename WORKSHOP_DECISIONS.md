@@ -39,8 +39,10 @@ older open questions there. Implementation remains pending spec agreement.
   with reformulated questions in lookup/export.
 - Provide a separate command to fetch answer-format and grading instructions
   for experimenters to incorporate into a system prompt or other setup.
-  Exact command name and whether instructions are global, per-question, or
-  both remain open. Instructions must not disclose reference answers.
+  Return one general instruction block for the benchmark, not per-question
+  instructions. Clearly label it as EnronQA-cli answer conventions, not
+  instructions supplied by the upstream EnronQA dataset. The exact command
+  name remains open. Instructions must not disclose reference answers.
 - The reformulation audit remains research input; it does not authorize
   replacing original EnronQA questions in the CLI's standard question set.
 - Question export omits the source email by default, so systems must retrieve
