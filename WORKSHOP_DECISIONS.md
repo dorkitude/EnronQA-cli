@@ -18,6 +18,8 @@ older open questions there. Implementation remains pending spec agreement.
   nonexistent question IDs valid.
 - Warn when submitted answers do not cover the entire selected set. Include
   coverage counts and the warning in the JSON report.
+- Duplicate question IDs in a batch are a validation error, including when
+  the submitted answers are identical.
 
 ## Latest source decisions
 
@@ -31,5 +33,5 @@ chose \"all\")"
 ## Still open
 
 Exact command names, JSON schemas, default/required set selection, handling of
-duplicate answers and malformed inputs, and deterministic answer conversion
+malformed inputs, and deterministic answer conversion
 and scoring policies.
