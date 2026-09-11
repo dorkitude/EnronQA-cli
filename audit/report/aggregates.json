@@ -53,64 +53,64 @@
   }
  },
  "semantic": {
-  "reviewed_questions": 2636,
+  "reviewed_questions": 3326,
   "reviewed_per_split": {
-   "train": 1663,
-   "dev": 525,
-   "test": 448
+   "train": 2091,
+   "dev": 666,
+   "test": 569
   },
-  "reviewed_emails": 356,
-  "coverage_pct": 0.4989551470365547,
+  "reviewed_emails": 459,
+  "coverage_pct": 0.6295617674672158,
   "verdict_counts": {
-   "convertible": 1923,
-   "unconvertible": 406,
-   "convertible_rewrite": 307
+   "convertible": 2434,
+   "unconvertible": 511,
+   "convertible_rewrite": 381
   },
   "cat_counts": {
-   "entity": 457,
-   "free_text": 421,
-   "span": 337,
-   "list": 306,
-   "multi_field": 261,
-   "person": 218,
-   "date": 139,
-   "org": 119,
-   "money": 70,
-   "place": 69,
-   "datetime": 54,
-   "number": 50,
-   "duration": 37,
-   "email_addr": 33,
-   "bool": 26,
-   "time": 24,
-   "percent": 15
+   "entity": 567,
+   "free_text": 532,
+   "span": 440,
+   "list": 395,
+   "multi_field": 324,
+   "person": 258,
+   "date": 183,
+   "org": 155,
+   "money": 88,
+   "place": 83,
+   "number": 70,
+   "datetime": 67,
+   "duration": 45,
+   "email_addr": 42,
+   "time": 30,
+   "bool": 30,
+   "percent": 17
   },
   "flag_counts": {
-   "mcq_leak_style": 608,
-   "normalization_risk": 546,
-   "mcq_leak_hedge": 306,
-   "mcq_leak_anachron": 276,
-   "boilerplate": 169,
-   "ambiguous_question": 146,
-   "vague_gold": 121,
-   "multi_valid_alias": 107,
-   "answer_in_question": 73,
-   "gold_unsupported": 66,
-   "mcq_incorrect_actually_correct": 64,
-   "gold_wrong": 27
+   "mcq_leak_style": 793,
+   "normalization_risk": 680,
+   "mcq_leak_hedge": 370,
+   "mcq_leak_anachron": 348,
+   "boilerplate": 213,
+   "ambiguous_question": 192,
+   "vague_gold": 161,
+   "multi_valid_alias": 138,
+   "answer_in_question": 95,
+   "gold_unsupported": 90,
+   "mcq_incorrect_actually_correct": 79,
+   "gold_wrong": 28
   },
   "conf_counts": [
    {
-    "conf": "high",
-    "len": 1761
+    "conf": "medium",
+    "len": 1074
    },
    {
     "conf": "low",
-    "len": 23
+    "len": 25
    },
    {
-    "conf": "medium",
-    "len": 852
+    "conf": "high",
+    "len": 2227
    }
   ]
  }

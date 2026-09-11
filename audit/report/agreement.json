@@ -1,0 +1,54 @@
+{
+ "paired_items": 150,
+ "cat_agreement": 0.94,
+ "verdict_agreement": 0.9,
+ "convertible_vs_unconvertible_agreement": 0.9533333333333334,
+ "canon_exact_agreement": 0.7866666666666666,
+ "verdict_agreement_by_conf_a": {
+  "medium": {
+   "n": 42,
+   "agree": 0.7380952380952381
+  },
+  "high": {
+   "n": 108,
+   "agree": 0.9629629629629629
+  }
+ },
+ "confusion_verdict": [
+  {
+   "verdict_a": "convertible",
+   "verdict_b": "convertible",
+   "len": 106
+  },
+  {
+   "verdict_a": "unconvertible",
+   "verdict_b": "unconvertible",
+   "len": 19
+  },
+  {
+   "verdict_a": "convertible_rewrite",
+   "verdict_b": "convertible_rewrite",
+   "len": 10
+  },
+  {
+   "verdict_a": "convertible",
+   "verdict_b": "convertible_rewrite",
+   "len": 7
+  },
+  {
+   "verdict_a": "unconvertible",
+   "verdict_b": "convertible_rewrite",
+   "len": 5
+  },
+  {
+   "verdict_a": "unconvertible",
+   "verdict_b": "convertible",
+   "len": 2
+  },
+  {
+   "verdict_a": "convertible_rewrite",
+   "verdict_b": "convertible",
+   "len": 1
+  }
+ ]
+}

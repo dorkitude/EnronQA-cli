@@ -58,18 +58,18 @@ Detailed tables: A1–A4.
 Exact coverage and all tables: AGGREGATES.md §B (regenerated from the cache).
 
 <!-- AUTO:coverage -->
-**Reviewed so far: 2,636 of 528,304 questions (0.5%)** from 356 of 73,772 emails
-(train 1,663/333,473 = 0.5%; dev 525/105,515 = 0.5%; test 448/89,316 = 0.5%).
-Generated 2026-09-11 07:40 UTC from `aggregates.json`. The remaining 525,668 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
+**Reviewed so far: 3,326 of 528,304 questions (0.6%)** from 459 of 73,772 emails
+(train 2,091/333,473 = 0.6%; dev 666/105,515 = 0.6%; test 569/89,316 = 0.6%).
+Generated 2026-09-11 07:41 UTC from `aggregates.json`. The remaining 524,978 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
 
 | Verdict | n | share of reviewed |
 |---|---|---|
-| convertible (as asked) | 1,923 | 73.0% |
-| convertible after question rewrite | 307 | 11.6% |
-| unconvertible (needs judge or task change) | 406 | 15.4% |
+| convertible (as asked) | 2,434 | 73.2% |
+| convertible after question rewrite | 381 | 11.5% |
+| unconvertible (needs judge or task change) | 511 | 15.4% |
 
-Most frequent schema categories: `entity` 17.3%, `free_text` 16.0%, `span` 12.8%, `list` 11.6%, `multi_field` 9.9%, `person` 8.3%, `date` 5.3%, `org` 4.5%.
-Most frequent flags: `mcq_leak_style` 23.1%, `normalization_risk` 20.7%, `mcq_leak_hedge` 11.6%, `mcq_leak_anachron` 10.5%, `boilerplate` 6.4%, `ambiguous_question` 5.5%.
+Most frequent schema categories: `entity` 17.0%, `free_text` 16.0%, `span` 13.2%, `list` 11.9%, `multi_field` 9.7%, `person` 7.8%, `date` 5.5%, `org` 4.7%.
+Most frequent flags: `mcq_leak_style` 23.8%, `normalization_risk` 20.4%, `mcq_leak_hedge` 11.1%, `mcq_leak_anachron` 10.5%, `boilerplate` 6.4%, `ambiguous_question` 5.8%.
 <!-- /AUTO:coverage -->
 
 Narrative interpretation of the reviewed set follows.
@@ -113,7 +113,17 @@ Conclusion: the supplied distractors can seed an MCQ mode but need filtering (dr
 ## 7. Label reliability (second pass)
 
 <!-- AUTO:agreement -->
-Second pass not yet run.
+Second pass at effort `medium` over 150 already-reviewed items (same model, independent call):
+
+| Measure | agreement |
+|---|---|
+| schema category identical | 94.0% |
+| verdict identical (3-way) | 90.0% |
+| convertible-vs-unconvertible identical | 95.3% |
+| canonical answer byte-identical (case-folded) | 78.7% |
+
+Verdict agreement by first-pass confidence: medium: 74% (n=42), high: 96% (n=108).
+This measures self-consistency of the Fable labels, not agreement with humans. Canonical answers vary in surface form far more than categories do, which is itself evidence that per-item normalization rules and alias lists are required before deterministic scoring.
 <!-- /AUTO:agreement -->
 
 ## 8. Proposed acceptance criteria for a reformulated item (not agreed)
