@@ -1,0 +1,19 @@
+[project]
+name = "enronqa-audit"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "dorkitude", email = "kyle@kylewild.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "polars>=1.44.2",
+    "pyarrow>=25.0.1",
+]
+
+[project.scripts]
+enronqa-audit = "enronqa_audit:main"
+
+[build-system]
+requires = ["uv_build>=0.12.12,<0.13.0"]
+build-backend = "uv_build"

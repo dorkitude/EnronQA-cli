@@ -1,0 +1,26 @@
+# Local-only data and source-derived artifacts (never commit raw EnronQA / Enron email text)
+data/
+audit/work/
+audit/ledger/
+audit/cache/
+*.parquet
+*.jsonl
+*.jsonl.gz
+*.db
+*.sqlite
+AUDIT_PROGRESS.md
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+.pytest_cache/
+
+# Go
+bin/
+dist/
+
+# OS / editor
+.DS_Store
+*.swp
