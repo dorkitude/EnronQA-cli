@@ -4,6 +4,13 @@ These user-confirmed decisions supplement SPEC.md and take precedence over
 older open questions there. Implementation remains pending spec agreement.
 
 - Go and Cobra; public `dorkitude/EnronQA-cli` repository, MIT license.
+- Dataset acquisition requires an explicit `fetch` command. Other commands
+  must not silently download missing data. Fetch from the upstream host at a
+  pinned revision; do not bundle or rehost the dataset in the GitHub repo.
+- Missing-data errors must explain what is missing and show the exact fetch
+  command needed to proceed. Fetch failures should identify the failure
+  (for example network, disk space, or integrity verification) and provide an
+  actionable next step without claiming the dataset is ready.
 - Batch grading accepts JSONL; granular operations support call-as-needed use.
 - Provide a separate JSONL export of the entire email corpus for indexing in
   external systems, with stable document IDs and email text. Support stdout
