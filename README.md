@@ -159,8 +159,11 @@ can contain the expected text while contradicting it.
 
 ## Implementation and data
 
-The planned CLI is written in Go using Cobra. Installation instructions will
-be added when an implementation is available.
+The planned CLI uses Python and Typer. The proposed minimum is Python 3.10,
+subject to dependency verification, to accommodate existing research
+environments including Ubuntu 22.04. No Go installation is needed. macOS users
+may need to install a suitable Python. Installation instructions for uv and
+existing Python environments will be added with the implementation.
 
 `fetch` downloads a pinned revision from the upstream
 [EnronQA dataset](https://huggingface.co/datasets/MichaelR207/enron_qa_0922).

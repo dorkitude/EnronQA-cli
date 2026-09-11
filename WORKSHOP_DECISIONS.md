@@ -3,7 +3,13 @@
 These user-confirmed decisions supplement SPEC.md and take precedence over
 older open questions there. Implementation remains pending spec agreement.
 
-- Go and Cobra; public `dorkitude/EnronQA-cli` repository, MIT license.
+- Python and Typer; public `dorkitude/EnronQA-cli` repository, MIT license.
+  This supersedes the earlier Go/Cobra requirement. Prioritize compatibility
+  with Python versions researchers already use on macOS and Ubuntu.
+  Proposed minimum: Python 3.10, to include Ubuntu 22.04's default Python;
+  dependency compatibility must be verified before promising support. Do not
+  assume a suitable Python is preinstalled on every Mac. Prefer uv for
+  development; document installation for existing Python environments too.
 - Dataset acquisition requires an explicit `fetch` command. Other commands
   must not silently download missing data. Fetch from the upstream host at a
   pinned revision; do not bundle or rehost the dataset in the GitHub repo.

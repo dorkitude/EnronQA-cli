@@ -5,7 +5,8 @@ Status: workshopping with Kyle Wild; implementation has not been approved to beg
 ## Agreed requirements
 
 - Repository: `dorkitude/EnronQA-cli`, public, MIT licensed.
-- Implementation: Go using Cobra.
+- Implementation: Python using Typer (supersedes Go/Cobra). Prioritize broadly
+  available Python versions on macOS and Ubuntu; see WORKSHOP_DECISIONS.md.
 - Support batch evaluation through an input JSONL file.
 - Support granular, call-as-needed operations for accessing questions and checking answers.
 - Operations are stateless: no implicit named runs, answer history, or accumulated scores.
