@@ -60,7 +60,7 @@ Exact coverage and all tables: AGGREGATES.md §B (regenerated from the cache).
 <!-- AUTO:coverage -->
 **Reviewed so far: 9,338 of 528,304 questions (1.8%)** from 1,343 of 73,772 emails
 (train 5,834/333,473 = 1.7%; dev 1,891/105,515 = 1.8%; test 1,613/89,316 = 1.8%).
-Generated 2026-09-11 14:42 UTC from `aggregates.json`. The remaining 518,966 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
+Generated 2026-09-11 15:12 UTC from `aggregates.json`. The remaining 518,966 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
 
 | Verdict | n | share of reviewed |
 |---|---|---|
@@ -124,7 +124,7 @@ Second pass at effort `medium` over 847 already-reviewed items (same model, inde
 | convertible-vs-unconvertible identical | 95.5% |
 | canonical answer byte-identical (case-folded) | 76.3% |
 
-Verdict agreement by first-pass confidence: low: 57% (n=7), high: 98% (n=564), medium: 76% (n=276).
+Verdict agreement by first-pass confidence: high: 98% (n=564), medium: 76% (n=276), low: 57% (n=7).
 This measures self-consistency of the Fable labels, not agreement with humans. Canonical answers vary in surface form far more than categories do, which is itself evidence that per-item normalization rules and alias lists are required before deterministic scoring.
 <!-- /AUTO:agreement -->
 
