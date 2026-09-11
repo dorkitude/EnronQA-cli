@@ -114,6 +114,11 @@ def main():
         qv = j.group_by("q_type", "verdict").len().pivot(on="verdict", index="q_type", values="len").fill_null(0)
         qv = qv.with_columns(total=pl.sum_horizontal(vc)).with_columns((100 * pl.col("unconvertible") / pl.col("total")).alias("% unconvertible") if "unconvertible" in qv.columns else pl.lit(None).alias("% unconvertible")).sort("total", descending=True)
         out.append(md_table(qv))
+        rw = j.filter(pl.col("verdict") == "convertible_rewrite")
+        nar = {"rewrite_items": rw.height, "narrowed_true": int((rw["narrowed"] == True).sum()), "narrowed_false": int((rw["narrowed"] == False).sum()), "narrowed_unknown_old_prompt": int(rw["narrowed"].is_null().sum())}
+        out.append(f"\n### B7. Question rewrites that narrow the information need\n\nOf {nar['rewrite_items']:,} `convertible_rewrite` items: narrowed = {nar['narrowed_true']:,}, not narrowed = {nar['narrowed_false']:,}, unknown (reviewed before the `narrowed` field was added to the prompt) = {nar['narrowed_unknown_old_prompt']:,}.\n")
+        agg["semantic"]["narrowed"] = nar
+        agg["semantic"]["prompt_versions"] = j.group_by("prompt_sha").len().to_dicts()
         agg["semantic"]["verdict_counts"] = {r["verdict"]: int(r["total"]) for r in v.to_dicts()}
         agg["semantic"]["cat_counts"] = {r["cat"]: int(r["total"]) for r in cv.to_dicts()}
         agg["semantic"]["flag_counts"] = {r["flags"]: int(r["n"]) for r in ft.to_dicts()}

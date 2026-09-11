@@ -29,6 +29,7 @@ Generated {datetime.datetime.now(datetime.UTC):%Y-%m-%d %H:%M} UTC from `aggrega
 | unconvertible (needs judge or task change) | {unc:,} | {pct(unc, n)} |
 
 Most frequent schema categories: {topcats}.
+Rewrites that narrow the original information need (drop a sub-question): {sem.get("narrowed",{}).get("narrowed_true",0):,} of {rew:,} rewrite items ({sem.get("narrowed",{}).get("narrowed_unknown_old_prompt",0):,} reviewed before the marker existed).
 Most frequent flags: {", ".join(f"`{k}` {pct(val, n)}" for k, val in sorted(f.items(), key=lambda kv: -kv[1])[:6])}."""
 else:
     coverage = "No semantic review collected yet."

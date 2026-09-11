@@ -21,6 +21,8 @@ from common import LEDGER, WORK, CACHE, REPORT, questions, emails
 BATCH_DIR = WORK / "batches"; BATCH_DIR.mkdir(exist_ok=True)
 REV_DIR = CACHE / "reviews"; REV_DIR.mkdir(exist_ok=True)
 PROMPT = (Path(__file__).parent / "review_prompt.md").read_text()
+import hashlib
+PROMPT_SHA = hashlib.sha1(PROMPT.encode()).hexdigest()[:10]
 MODEL = os.environ.get("REVIEW_MODEL", "claude-fable-5-1")
 EFFORT = os.environ.get("REVIEW_EFFORT", "low")
 MAX_CHARS = int(os.environ.get("REVIEW_MAX_CHARS", "48000"))   # ~12k tokens of payload per call
@@ -86,7 +88,7 @@ def run_one(bfile: Path):
         result = meta.get("result", "")
         parsed, err = parse_result(result, n)
         rec = {"batch": bfile.stem, "n_items": n, "elapsed_s": round(time.time() - t0, 1), "returncode": proc.returncode,
-               "usage": meta.get("usage"), "cost_usd_list": meta.get("total_cost_usd"), "model": MODEL, "effort": EFFORT,
+               "usage": meta.get("usage"), "cost_usd_list": meta.get("total_cost_usd"), "model": MODEL, "effort": EFFORT, "prompt_sha": PROMPT_SHA,
                "parse_error": err, "items": parsed, "raw_result": result if err else None, "stderr": proc.stderr[-2000:] if proc.returncode else None}
     except subprocess.TimeoutExpired:
         rec = {"batch": bfile.stem, "n_items": n, "elapsed_s": round(time.time() - t0, 1), "returncode": -1, "parse_error": "timeout", "items": []}
@@ -172,8 +174,9 @@ def collect():
                          "conf": str(it.get("conf")), "flags": [str(f) for f in (it.get("flags") or [])],
                          "canon": canon if isinstance(canon, str) else json.dumps(canon, ensure_ascii=False),
                          "aliases": [str(a) for a in (it.get("aliases") or [])], "rq": it.get("rq"), "note": it.get("note"),
-                         "model": r.get("model"), "effort": r.get("effort")})
-    df = pl.DataFrame(rows, schema_overrides={"rq": pl.Utf8, "note": pl.Utf8})
+                         "narrowed": it.get("narrowed") if isinstance(it.get("narrowed"), bool) else None,
+                         "model": r.get("model"), "effort": r.get("effort"), "prompt_sha": r.get("prompt_sha")})
+    df = pl.DataFrame(rows, schema_overrides={"rq": pl.Utf8, "note": pl.Utf8, "narrowed": pl.Boolean, "prompt_sha": pl.Utf8})
     df = df.unique(subset=["qid"], keep="last")
     df.write_parquet(LEDGER / "semantic.parquet")
     print("semantic rows", df.height)
