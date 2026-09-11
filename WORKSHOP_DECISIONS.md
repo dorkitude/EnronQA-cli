@@ -61,6 +61,10 @@ older open questions there. Implementation remains pending spec agreement.
   coverage counts and the warning in the JSON report.
 - Duplicate question IDs in a batch are a validation error, including when
   the submitted answers are identical.
+- Batch validation collects and reports all detectable input problems in a
+  single pass, with JSONL line numbers and question IDs where available,
+  rather than stopping at the first invalid entry. Malformed lines must not
+  prevent validation of later lines. No grading occurs if any errors exist.
 - Validate the entire batch before grading begins. Malformed JSONL, invalid
   records, unknown question IDs, out-of-set IDs, and duplicate IDs reject the
   batch with an error and nonzero exit status. Do not grade a valid subset or
