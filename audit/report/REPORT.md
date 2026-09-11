@@ -79,6 +79,7 @@ Narrative interpretation of the reviewed set follows.
 - **Named people, organizations, places, email addresses, phone numbers, transaction IDs, document titles** (`person`, `org`, `place`, `email_addr`, `entity`). These dominate the convertible set. The main risk is *aliasing*: emails use "Steven J Kean", "Steve Kean", "Kean" and the header form "Steven J Kean/HOU/EES"; the reviewer emits an alias list and flags `normalization_risk` / `multi_valid_alias` when the email itself varies. A scorer needs case/punctuation/whitespace folding plus the per-item alias list; it should not attempt fuzzy name matching.
 - **Dates, times, money, percentages, counts, durations** (`date`, `time`, `datetime`, `money`, `percent`, `number`, `duration`). Canonical forms are ISO dates (with partial dates when the email omits the year), 24-hour times, `USD <amount>`, and unit-bearing numbers. Risks: year inference (the email header supplies the year, the body often does not), time zones (headers are in Pacific or Central time, bodies quote other zones), and approximate quantities ("approximately $5.1 billion").
 - **Explicit lists** (`list`). Faithful when the email enumerates the items; the reviewer records whether order carries information. Scoring should be set equality after per-element normalization, with order enforced only when `ordered:true`.
+- **A caution on rewrites.** Many `convertible_rewrite` items are two-part questions ("on what date was the letter sent, and what did it request?") where the reviewer keeps the deterministic half and drops the explanatory half. That *narrows* the information need rather than preserving it. The ledger records the rewritten question so this can be audited, and §8 treats a rewrite that drops a sub-question as a partial conversion that must be labelled as such, not silently counted as faithful.
 - **Multi-field answers** (`multi_field`). Questions such as "who sent it and on what date" or "what are the positions of A and B" convert to a small JSON object when *each* field is itself deterministic; the reviewer marks items unconvertible when one field is explanatory.
 - **Short verbatim spans** (`span`). Faithful when the question asks for a specific phrase that appears in the email ("what did X say the report is not intended to be"). Only a minority of gold answers fall here despite the dataset's RAG framing.
 
@@ -130,7 +131,7 @@ This measures self-consistency of the Fable labels, not agreement with humans. C
 
 An item enters the deterministic test set only if all hold:
 
-1. Verdict `convertible` or `convertible_rewrite` with a rewritten question stored alongside the original.
+1. Verdict `convertible`, or `convertible_rewrite` with the rewritten question stored alongside the original **and** a `narrowed: true|false` marker stating whether the rewrite dropped part of the original information need (dropped-part items are reported separately and never counted as faithful conversions).
 2. Canonical answer conforms to its schema's grammar (ISO date, `USD` amount, JSON array/object, etc.) and validates against a schema-specific normalizer.
 3. Canonical answer (or one alias) is locatable in the email after normalization; numbers and dates in it occur in the email or in its headers.
 4. No `gold_unsupported`, `gold_wrong`, `ambiguous_question`, or `vague_gold` flag.

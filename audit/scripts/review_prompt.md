@@ -43,5 +43,5 @@ Flags (include any that apply):
 Confidence (conf): high | medium | low, about your own classification.
 
 Output: ONLY a JSON array, one object per item in input order, each with keys:
-{"i": <item index>, "cat": ..., "verdict": ..., "canon": <string|array|object>, "aliases": [..] (optional), "rq": <rewritten question> (only for convertible_rewrite), "flags": [...], "conf": ..., "note": <at most 12 words, optional>}
+{"i": <item index>, "cat": ..., "verdict": ..., "canon": <string|array|object>, "aliases": [..] (optional), "rq": <rewritten question> (only for convertible_rewrite), "narrowed": <true|false, only for convertible_rewrite: true if the rewrite drops any part of the original information need, e.g. keeps the date but drops the "and what did it request" half>, "flags": [...], "conf": ..., "note": <at most 12 words, optional>}
 Do not include any text outside the JSON array. Do not quote long email passages.
