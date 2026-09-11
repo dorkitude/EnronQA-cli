@@ -18,6 +18,9 @@ older open questions there. Implementation remains pending spec agreement.
 - Provide a separate JSONL export of the entire email corpus for indexing in
   external systems, with stable document IDs and email text. Support stdout
   and explicit file saving. Exact metadata fields remain to be specified.
+- Support lookup of an individual email by stable document ID, returning its
+  email text and available metadata. Follow the stateless stdout, optional
+  JSON, and explicit file-saving conventions. Exact command name remains open.
 - Export the selected question set as JSONL for a user's system to consume.
   Include stable question IDs for matching submitted answers to questions.
   As with individual question lookup, omit reference answers by default and
