@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "enronqa-cli"
+version = "0.1.0"
+description = "Reproducible EnronQA dataset access and lexical answer evaluation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "Kyle Wild"}]
+dependencies = ["typer>=0.16,<1", "pyarrow>=18,<24"]
+
+[project.scripts]
+enronqa = "enronqa.cli:app"
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/enronqa"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/README.md", "/LICENSE", "/pyproject.toml", "/uv.lock", "/packaging"]
+exclude = ["/audit", "/data"]
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

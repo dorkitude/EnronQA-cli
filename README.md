@@ -4,12 +4,48 @@ A command-line test bench for search and question answering over Enron emails.
 Export questions, submit answers, and get a JSON report with overall accuracy
 and individual results.
 
-**Design preview:** the CLI is not implemented yet. Commands and JSON schemas
-below are proposals for review, not runnable instructions. Agreed behavior is
-recorded in [WORKSHOP_DECISIONS.md](WORKSHOP_DECISIONS.md), which supplements
-[SPEC.md](SPEC.md). Answer comparison rules are still being designed; this tool
-must not claim to reproduce the original paper's scores without matching its
-protocol.
+**Scoring scope:** v0.1 measures deterministic **lexical agreement**, not semantic
+answer correctness or the original paper's LLM-judge accuracy. Valid paraphrases
+can fail. Questions are never rewritten. The default `normalized-exact` scorer
+compares the submitted answer with upstream gold and alternate answers after
+Unicode NFC normalization, case folding, and whitespace collapse. Punctuation,
+numbers, and negation remain significant. Use `--scorer exact` for literal
+string equality. Substring matching is never used.
+
+## Install
+
+### macOS with Homebrew
+
+```bash
+brew install dorkitude/tap/enronqa-cli
+enronqa --version
+```
+
+Homebrew installs Python and dependencies for you in an isolated environment.
+
+### Ubuntu 22.04+ (amd64) with apt
+
+```bash
+curl -fLO https://github.com/dorkitude/EnronQA-cli/releases/download/v0.1.0/enronqa-cli_0.1.0_amd64.deb
+sudo apt install ./enronqa-cli_0.1.0_amd64.deb
+enronqa --version
+```
+
+This downloadable `.deb` includes its own Python runtime and dependencies;
+it does not change system Python. There is no hosted apt repository or
+automatic release upgrade channel yet. Download a newer `.deb` to upgrade.
+
+### Existing Python 3.10+ or uv
+
+```bash
+uv tool install 'https://github.com/dorkitude/EnronQA-cli/releases/download/v0.1.0/enronqa_cli-0.1.0-py3-none-any.whl'
+```
+
+Alternatively, use `pip install` with the same wheel URL inside your existing
+Python virtual environment. No PyPI publication is required. A suitable Python
+is not necessarily preinstalled on macOS; Homebrew or uv can provide it.
+All installation methods install the CLI only. Run `enronqa fetch` explicitly
+to obtain the dataset. Release assets include `SHA256SUMS` for verification.
 
 ## Batch workflow
 
@@ -50,11 +86,14 @@ enronqa documents export --shard-size 1000 --output-dir emails/
 This writes up to 1,000 emails per numbered JSONL file, plus a manifest with
 the dataset revision, per-file counts, and checksums. It does not create one
 file per email. Sharded export follows the same early output-conflict checks
-and explicit overwrite policy. Flag names and manifest schema are proposals.
+and explicit overwrite policy. `--force` can replace a previous sharded export
+only when its directory contains exactly the files listed in its manifest;
+unrelated files cause an error. Completed shards are staged before publication.
+Consumers should wait for command success before reading a sharded export.
 
 ## Answer files
 
-Proposed JSONL format: one answer per line, identified by question ID. These IDs
+JSONL format: one answer per line, identified by question ID. These IDs
 and values are illustrative, not actual benchmark records.
 
 ```jsonl
@@ -142,7 +181,7 @@ Run: enronqa fetch
 
 ## Score report
 
-The final schema remains open. The proposed report includes:
+Reports use `schema_version: "1"` and include:
 
 | Section | Contents |
 | --- | --- |
@@ -152,23 +191,48 @@ The final schema remains open. The proposed report includes:
 | Per question | ID, original question, submitted and reference answers, verdict, abstention flag, comparison details, source document ID |
 | Submitted metadata | Extra input fields retained without affecting grading or overwriting grader fields |
 
-Accuracy describes the submitted batch, not unsubmitted questions. Exact
-matching, normalization, and other deterministic comparison policies remain
-under review. Universal substring matching is not an agreed rule: a response
-can contain the expected text while contradicting it.
+Accuracy describes the submitted batch, not unsubmitted questions. It is a
+fraction between 0 and 1 under `summary.accuracy`. `summary.denominator` includes
+abstentions. Failed validation returns `valid: false`, an `errors` array, and no
+scores (exit 2). Successful validation/grading exits 0 even when answers are wrong.
+Scoring reports disclose reference answers and correct document IDs; keep them
+out of your system's test-taking inputs.
 
 ## Implementation and data
 
-The planned CLI uses Python and Typer. The proposed minimum is Python 3.10,
-subject to dependency verification, to accommodate existing research
-environments including Ubuntu 22.04. No Go installation is needed. macOS users
-may need to install a suitable Python. Installation instructions for uv and
-existing Python environments will be added with the implementation.
+The CLI uses Python 3.10+ and Typer, with PyArrow for Parquet ingestion. No Go,
+model runtime, API key, or LLM service is required. Development uses `uv sync`,
+`uv run pytest`, and `uv build`. The Python API is reusable:
 
-`fetch` downloads a pinned revision from the upstream
-[EnronQA dataset](https://huggingface.co/datasets/MichaelR207/enron_qa_0922).
-Other commands do not silently download data. The corpus is not bundled in
-this repository. Dataset cache location and configuration remain open.
+```python
+from enronqa.data import Dataset
+from enronqa.scoring import validation, score
+
+with Dataset() as dataset, open("answers.jsonl", "rb") as answers:
+    records, report = validation(answers, dataset, "test")
+    if report["valid"]:
+        report = score(records, report, dataset)
+```
+
+`fetch` downloads and SHA-256 verifies the pinned upstream
+[EnronQA dataset](https://huggingface.co/datasets/MichaelR207/enron_qa_0922)
+revision `c0b3a9190fd970e83cfbe7d399a08860e43e221e`, then builds a local SQLite
+index. Other commands never download data. The corpus is not bundled here.
+Allow several GB of free space for downloads, the index, and temporary files.
+The cache defaults to `$XDG_CACHE_HOME/enronqa` or `~/.cache/enronqa`.
+Override it with `ENRONQA_DATA_DIR` or a command's `--data-dir PATH` option.
+
+There are 528,304 questions: 333,473 train, 105,515 dev, and 89,316 test.
+Corpus export deduplicates repeated upstream rows by email path, producing
+73,772 unique emails. Document IDs are original paths. Public question IDs are
+SHA-256 hashes of `revision/split/path/question-index` (zero-based index), stable
+for this pinned revision, so the ID itself does not reveal the source path.
+The split is question-level: emails can occur in multiple splits. This is not
+an unseen-email generalization benchmark without additional experimental design.
+
+Exports stream records. Batch validation retains submissions and grading retains
+a complete report in memory; very large batches therefore require memory
+proportional to their answer and metadata size. There is no implicit saved run.
 
 ## Research audit
 
