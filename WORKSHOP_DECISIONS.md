@@ -24,6 +24,12 @@ older open questions there. Implementation remains pending spec agreement.
   include them only with `--include-answer`. Support stdout and explicit file
   saving.
 - Stateless: stdout by default, optional JSON and explicit file saving.
+- Explicit output files must not overwrite existing files unless `--force`
+  is supplied. Check output-path conflicts and detectable writeability/path
+  errors during preflight, before consuming batch input, grading, exporting,
+  or other substantive work. `--force` permits replacement but must not
+  truncate the existing file before successful output is ready. Preserve
+  no-clobber protection at final write as well, to handle concurrent changes.
 - Question lookup hides reference answers unless `--include-answer` is used.
 - Question export omits the source email by default, so systems must retrieve
   evidence themselves. `--include-source` attaches the correct source email
