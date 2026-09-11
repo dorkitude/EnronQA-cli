@@ -15,7 +15,7 @@ findings are in [`LICENSING.md`](LICENSING.md). Counts are in `counts.json`,
 |---|---|---|
 | 1. Enumeration | Every question in every split with a stable ID (`split/path/qidx`) and its email | **528,304 / 528,304 (100%)** |
 | 2. Programmatic screening | Surface shape of gold/alternate/incorrect answers, evidence overlap with the email, question form | **528,304 / 528,304 (100%)** |
-| 3. Item-level semantic review (Claude Fable via `claude -p`) | Whether the *information need* survives a deterministic answer schema; category, canonical answer, flags, confidence | **see §5 for the exact number reviewed at the time of writing** |
+| 3. Item-level semantic review (Claude Fable via `claude -p`) | Whether the *information need* survives a deterministic answer schema; category, canonical answer, flags, confidence | **partial; exact figure in §5** |
 | 3b. Second-pass agreement | Self-consistency of the Fable labels | see §7 |
 
 Stage 2 covers every record but only proves things about surface form. Stage 3
@@ -56,8 +56,23 @@ Detailed tables: A1–A4.
 ## 5. Semantic findings (item-level review)
 
 Exact coverage and all tables: AGGREGATES.md §B (regenerated from the cache).
-Narrative interpretation of the reviewed set is in §5.1–5.4 below and is
-updated with the final coverage figure at the end of the run.
+
+<!-- AUTO:coverage -->
+**Reviewed so far: 2,636 of 528,304 questions (0.5%)** from 356 of 73,772 emails
+(train 1,663/333,473 = 0.5%; dev 525/105,515 = 0.5%; test 448/89,316 = 0.5%).
+Generated 2026-09-11 07:40 UTC from `aggregates.json`. The remaining 525,668 questions have **not** been semantically reviewed; the percentages below describe the reviewed set only.
+
+| Verdict | n | share of reviewed |
+|---|---|---|
+| convertible (as asked) | 1,923 | 73.0% |
+| convertible after question rewrite | 307 | 11.6% |
+| unconvertible (needs judge or task change) | 406 | 15.4% |
+
+Most frequent schema categories: `entity` 17.3%, `free_text` 16.0%, `span` 12.8%, `list` 11.6%, `multi_field` 9.9%, `person` 8.3%, `date` 5.3%, `org` 4.5%.
+Most frequent flags: `mcq_leak_style` 23.1%, `normalization_risk` 20.7%, `mcq_leak_hedge` 11.6%, `mcq_leak_anachron` 10.5%, `boilerplate` 6.4%, `ambiguous_question` 5.5%.
+<!-- /AUTO:coverage -->
+
+Narrative interpretation of the reviewed set follows.
 
 ### 5.1 Convertible classes (deterministic scoring is fair after normalization)
 
@@ -97,7 +112,9 @@ Conclusion: the supplied distractors can seed an MCQ mode but need filtering (dr
 
 ## 7. Label reliability (second pass)
 
-Filled from `agreement.json` when the second pass has run: agreement on category, on verdict, and on the convertible/unconvertible split, broken down by first-pass confidence.
+<!-- AUTO:agreement -->
+Second pass not yet run.
+<!-- /AUTO:agreement -->
 
 ## 8. Proposed acceptance criteria for a reformulated item (not agreed)
 
