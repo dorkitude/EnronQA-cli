@@ -1,5 +1,8 @@
 # EnronQA-cli — Specification (workshop draft)
 
+See [WORKSHOP_DECISIONS.md](WORKSHOP_DECISIONS.md) for subsequent user-confirmed
+CLI decisions, including selected-set validation and incomplete-batch scoring.
+
 Status: **not agreed**. This file records only requirements Kyle Wild has
 explicitly agreed to, plus a clearly separated list of open questions. Nothing
 under "Undecided" is a commitment. The CLI is **not** to be implemented until
