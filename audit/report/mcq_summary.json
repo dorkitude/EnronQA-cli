@@ -1,0 +1,77 @@
+{
+ "inc_identical_pair": {
+  "train": {
+   "n": 4244,
+   "pct": 1.27
+  },
+  "dev": {
+   "n": 1302,
+   "pct": 1.23
+  },
+  "test": {
+   "n": 1170,
+   "pct": 1.31
+  },
+  "all_n": 6716
+ },
+ "inc_equals_gold_or_alt": {
+  "train": {
+   "n": 122,
+   "pct": 0.04
+  },
+  "dev": {
+   "n": 38,
+   "pct": 0.04
+  },
+  "test": {
+   "n": 19,
+   "pct": 0.02
+  },
+  "all_n": 179
+ },
+ "inc_empty": {
+  "train": {
+   "n": 1,
+   "pct": 0.0
+  },
+  "dev": {
+   "n": 0,
+   "pct": 0.0
+  },
+  "test": {
+   "n": 0,
+   "pct": 0.0
+  },
+  "all_n": 1
+ },
+ "gold_equals_alt": {
+  "train": {
+   "n": 49243,
+   "pct": 14.77
+  },
+  "dev": {
+   "n": 15890,
+   "pct": 15.06
+  },
+  "test": {
+   "n": 13525,
+   "pct": 15.14
+  },
+  "all_n": 78658
+ },
+ "inc_starts_generic": {
+  "train": {
+   "n": 2892,
+   "pct": 0.87
+  },
+  "dev": {
+   "n": 932,
+   "pct": 0.88
+  },
+  "test": {
+   "n": 797,
+   "pct": 0.89
+  },
+  "all_n": 4621
+ }
+}
