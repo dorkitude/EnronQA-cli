@@ -105,11 +105,11 @@ Distractor length minus gold length (words), quantiles: p10=-8, p25=-2, p50=+3, 
 
 ### B3. Reviewer confidence by verdict
 
-| verdict | medium | low | high |
+| verdict | medium | high | low |
 |---|---|---|---|
-| convertible | 1095 | 15 | 4054 |
-| convertible_rewrite | 647 | 26 | 158 |
-| unconvertible | 587 | 8 | 455 |
+| convertible | 1095 | 4054 | 15 |
+| convertible_rewrite | 647 | 158 | 26 |
+| unconvertible | 587 | 455 | 8 |
 
 ### B4. Flags (share of reviewed items carrying each flag)
 
