@@ -97,7 +97,9 @@ def validation(stream, dataset, selection):
     report = {
         "schema_version": "1",
         "valid": not errors,
-        "dataset": {"id": DATASET, "revision": REVISION},
+        "dataset": getattr(
+            dataset, "provenance", lambda: {"id": DATASET, "revision": REVISION}
+        )(),
         "set": selection,
         "coverage": {"submitted": covered, "total": total, "missing": total - covered},
         "warnings": warnings,

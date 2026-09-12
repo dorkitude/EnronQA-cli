@@ -185,7 +185,9 @@ def prepare_inputs(records, dataset):
                 ],
                 "split": question["split"],
                 "document_id": did,
-                "dataset": {"id": DATASET, "revision": REVISION},
+                "dataset": getattr(
+                    dataset, "provenance", lambda: {"id": DATASET, "revision": REVISION}
+                )(),
                 "cli_version": __version__,
                 "metadata": {
                     k: v

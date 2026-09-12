@@ -142,3 +142,29 @@ This revision contains 528,304 questions (333,473 train, 105,515 dev, 89,316 tes
 CLI code is **MIT licensed**. The dataset has separate [licensing considerations](docs/DATASET_LICENSING.md) and is not bundled or rehosted here.
 
 For development: `uv sync`, `uv run pytest`, `uv build`.
+
+### Local datasets
+
+Use an explicit local dataset when evaluating another corpus. The importer retains
+its own dataset identity and a content-derived revision; it does not change the
+pinned EnronQA download.
+
+```sh
+enronqa import-dataset --dataset-id example/my-qa \
+  --questions questions.jsonl --documents documents.jsonl --data-dir ./my-qa
+enronqa judge-input answers.jsonl --set test --data-dir ./my-qa
+enronqa score answers.jsonl --set test --data-dir ./my-qa \
+  --base-url https://provider.example/v1 --model MODEL
+```
+
+Each question JSONL object requires `question_id`, `document_id`, `question`, and
+`answer`; optional fields are `alternate_answers` (list of strings) and `split`
+(`train`, `dev`, or `test`, default `test`). Each document requires `document_id`
+and `text`, with optional `source`. For compatibility with existing judge packets,
+source text is exposed under `source.email` and source labels under `source.user`.
+Use a custom judge prompt for a different source domain when appropriate.
+
+The destination must be new. Import rejects duplicate IDs and missing sources,
+validates records before publishing the directory, and verifies the resulting
+SQLite checksum whenever it is opened. All validation and judge outputs retain
+the imported dataset ID and revision.

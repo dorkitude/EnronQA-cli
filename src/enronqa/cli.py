@@ -202,8 +202,8 @@ def document_export(
             try:
                 manifest = {
                     "schema_version": "1",
-                    "dataset": DATASET,
-                    "revision": REVISION,
+                    "dataset": dataset.dataset_id,
+                    "revision": dataset.revision,
                     "shards": [],
                     "documents": 0,
                 }
@@ -437,3 +437,17 @@ def check(
             if report["valid"]:
                 report = score_batch(prepare_inputs(records, dataset), report, config)
             finish_report(report, output_path, force)
+
+
+@app.command("import-dataset")
+def import_dataset(
+    questions_path: Path = typer.Option(..., "--questions"),
+    documents_path: Path = typer.Option(..., "--documents"),
+    data_dir: Path = typer.Option(..., "--data-dir"),
+    dataset_id: str = typer.Option(..., "--dataset-id"),
+):
+    """Import a local JSONL QA dataset into a new checksum-verified data directory."""
+    from .local import import_local
+
+    with errors():
+        emit(import_local(questions_path, documents_path, data_dir, dataset_id))

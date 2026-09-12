@@ -137,7 +137,30 @@ def fetch(root, progress=lambda message: None):
 
 class Dataset:
     def __init__(self, root=None):
-        path = Path(root or default_dir()) / REVISION / "index.sqlite"
+        self.dataset_id = DATASET
+        self.revision = REVISION
+        directory = Path(root or default_dir())
+        local_manifest = directory / "dataset.json"
+        expected = {"revision": REVISION, "schema": "1"}
+        if local_manifest.exists():
+            manifest = json.loads(local_manifest.read_text(encoding="utf-8"))
+            if manifest.get("schema") != "enronqa-local-v1" or not all(
+                isinstance(manifest.get(k), str) and manifest[k].strip()
+                for k in ["id", "revision", "index_sha256"]
+            ):
+                raise ValueError("Invalid local dataset manifest")
+            path = directory / "index.sqlite"
+            if not path.is_file() or digest(path) != manifest["index_sha256"]:
+                raise ValueError("Local dataset index checksum mismatch")
+            self.dataset_id = manifest["id"]
+            self.revision = manifest["revision"]
+            expected = {
+                "revision": self.revision,
+                "schema": "local-1",
+                "dataset": self.dataset_id,
+            }
+        else:
+            path = directory / REVISION / "index.sqlite"
         if not path.is_file():
             raise ValueError(
                 f"Dataset index not found at {path}. Run: enronqa fetch --data-dir '{Path(root or default_dir())}'"
@@ -146,7 +169,7 @@ class Dataset:
             self.db = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)
             self.db.row_factory = sqlite3.Row
             metadata = dict(self.db.execute("SELECT key,value FROM metadata"))
-            if metadata != {"revision": REVISION, "schema": "1"}:
+            if metadata != expected:
                 raise ValueError("Dataset index version mismatch")
             self.db.execute(
                 "SELECT question_id, split, document_id, question, answer, alternates FROM questions LIMIT 1"
@@ -158,6 +181,9 @@ class Dataset:
             raise ValueError(
                 f"Invalid dataset index: {exc}. Run: enronqa fetch --data-dir '{Path(root or default_dir())}'"
             ) from exc
+
+    def provenance(self):
+        return {"id": self.dataset_id, "revision": self.revision}
 
     def __enter__(self):
         return self
