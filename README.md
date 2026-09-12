@@ -168,3 +168,17 @@ The destination must be new. Import rejects duplicate IDs and missing sources,
 validates records before publishing the directory, and verifies the resulting
 SQLite checksum whenever it is opened. All validation and judge outputs retain
 the imported dataset ID and revision.
+
+To make judge inference settings explicit, pass `--request-options options.json`
+to `score` or `check`. Supported JSON keys are `temperature`, `max_tokens`, and
+`reasoning_effort`; only use options supported by your provider. For example:
+
+```json
+{"temperature": 0, "max_tokens": 1024, "reasoning_effort": "none"}
+```
+
+Reports preserve these settings and an `api_attempts` list per result, containing
+elapsed seconds and provider-reported token usage. Usage is `null` when the
+provider does not report it, including some failed requests. Reported usage for
+incomplete or malformed completions is retained across retries. No token prices
+are assumed by the CLI.

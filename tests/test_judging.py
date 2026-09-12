@@ -432,3 +432,75 @@ def test_interrupt_preserves_completed_and_inflight(corpus, api, tmp_path):
         if process.poll() is None:
             process.kill()
             process.wait()
+
+
+def test_request_options_and_usage_are_recorded(corpus, api, tmp_path):
+    options = tmp_path / "options.json"
+    options.write_text('{"temperature":0,"max_tokens":512,"reasoning_effort":"none"}')
+    envelope = {
+        "choices": [
+            {"message": {"content": '{"correct":true}'}, "finish_reason": "stop"}
+        ],
+        "usage": {
+            "prompt_tokens": 100,
+            "completion_tokens": 5,
+            "prompt_tokens_details": {"cached_tokens": 80},
+        },
+    }
+    api.responses.append((200, json.dumps(envelope)))
+    result = run_batch(
+        ["--request-options", str(options)], data='{"question_id":"q1","answer":"yes"}'
+    )
+    assert result.exit_code == 0, result.output
+    report = json.loads(result.output)
+    assert report["judge"]["request_options"] == json.loads(options.read_text())
+    assert api.calls[0][2]["max_tokens"] == 512
+    attempts = report["results"][0]["api_attempts"]
+    assert attempts[0]["usage"] == envelope["usage"]
+    assert attempts[0]["elapsed_seconds"] >= 0
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"model": "other"},
+        {"messages": []},
+        {"max_tokens": True},
+        {"temperature": 3},
+        {"reasoning_effort": "unsupported"},
+    ],
+)
+def test_invalid_request_options_fail_before_api(corpus, api, tmp_path, options):
+    path = tmp_path / "options.json"
+    path.write_text(json.dumps(options))
+    result = run_batch(["--request-options", str(path)])
+    assert result.exit_code == 2
+    assert not api.calls
+
+
+def test_usage_preserved_for_invalid_completion_retry(corpus, api):
+    api.responses.extend(
+        [
+            (
+                200,
+                json.dumps(
+                    {
+                        "choices": [
+                            {
+                                "message": {"content": '{"correct":true}'},
+                                "finish_reason": "length",
+                            }
+                        ],
+                        "usage": {"prompt_tokens": 10, "completion_tokens": 20},
+                    }
+                ),
+            ),
+            '{"correct":true}',
+        ]
+    )
+    result = run_batch(data='{"question_id":"q1","answer":"yes"}')
+    assert result.exit_code == 0, result.output
+    attempts = json.loads(result.output)["results"][0]["api_attempts"]
+    assert len(attempts) == 2
+    assert attempts[0]["usage"]["completion_tokens"] == 20
+    assert attempts[1]["usage"] is None

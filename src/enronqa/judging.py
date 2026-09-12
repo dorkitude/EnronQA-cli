@@ -7,6 +7,7 @@ import os
 import queue
 import signal
 import threading
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -18,6 +19,8 @@ from pathlib import Path
 from . import __version__
 from .data import DATASET, REVISION
 from .scoring import check_json_values, json_object
+
+_REQUEST_USAGE = threading.local()
 
 # Adaptation, not a verbatim reproduction of EnronQA Appendix B.6.
 METHOD = "https://arxiv.org/pdf/2505.00263#page=25"
@@ -61,6 +64,7 @@ class JudgeConfig:
     max_consecutive_failures: int = 5
     concurrency: int = 1
     timeout: float = 60
+    request_options: dict = field(default_factory=dict)
 
     @classmethod
     def create(
@@ -74,6 +78,7 @@ class JudgeConfig:
         max_consecutive_failures=5,
         concurrency=1,
         timeout=60,
+        request_options=None,
     ):
         if judge_prompt is not None and verbose:
             raise ValueError("--judge-prompt cannot be combined with --verbose")
@@ -118,6 +123,36 @@ class JudgeConfig:
             raise ValueError(
                 "Retries must be nonnegative; failure limit, concurrency, and timeout must be positive"
             )
+        options = (
+            parse_json(Path(request_options).read_text())
+            if request_options is not None
+            else {}
+        )
+        if not isinstance(options, dict) or set(options) - {
+            "temperature",
+            "max_tokens",
+            "reasoning_effort",
+        }:
+            raise ValueError(
+                "Request options support only temperature, max_tokens, and reasoning_effort"
+            )
+        if "max_tokens" in options and (
+            type(options["max_tokens"]) is not int or options["max_tokens"] < 1
+        ):
+            raise ValueError("max_tokens must be a positive integer")
+        if "temperature" in options and (
+            type(options["temperature"]) not in (int, float)
+            or not 0 <= options["temperature"] <= 2
+        ):
+            raise ValueError("temperature must be between 0 and 2")
+        if "reasoning_effort" in options and options["reasoning_effort"] not in [
+            "none",
+            "minimal",
+            "low",
+            "medium",
+            "high",
+        ]:
+            raise ValueError("Unsupported reasoning_effort")
         prompt = VERBOSE_PROMPT if verbose else PROMPT
         if judge_prompt is not None:
             prompt = Path(judge_prompt).read_text(encoding="utf-8")
@@ -136,6 +171,7 @@ class JudgeConfig:
             max_consecutive_failures,
             concurrency,
             timeout,
+            options,
         )
 
     def provenance(self):
@@ -156,6 +192,7 @@ class JudgeConfig:
             "max_consecutive_failures": self.max_consecutive_failures,
             "concurrency": self.concurrency,
             "timeout_seconds": self.timeout,
+            "request_options": self.request_options,
         }
 
 
@@ -226,6 +263,7 @@ def request_judgment(packet, config):
             {"role": "user", "content": json.dumps(inputs, ensure_ascii=False)},
         ],
     }
+    payload.update(config.request_options)
     # Avoid provider-specific JSON modes: custom prompts may return arrays/scalars.
     request = urllib.request.Request(
         config.base_url + "/chat/completions",
@@ -263,6 +301,19 @@ def request_judgment(packet, config):
         ) from None
     try:
         envelope = parse_json(body)
+        usage = envelope.get("usage")
+        if isinstance(usage, dict):
+            _REQUEST_USAGE.value = {
+                k: usage[k]
+                for k in [
+                    "prompt_tokens",
+                    "completion_tokens",
+                    "total_tokens",
+                    "prompt_tokens_details",
+                    "completion_tokens_details",
+                ]
+                if k in usage
+            }
         choice = envelope["choices"][0]
         if choice.get("finish_reason") not in (None, "stop"):
             raise ValueError("Incomplete completion")
@@ -293,16 +344,38 @@ def request_judgment(packet, config):
 
 def judge_one(packet, config, stop):
     attempts = 0
+    attempt_metrics = []
     while not stop.is_set():
         attempts += 1
+        _REQUEST_USAGE.value = None
+        started = time.monotonic()
         try:
+            judgment = request_judgment(packet, config)
+            attempt_metrics.append(
+                {
+                    "elapsed_seconds": time.monotonic() - started,
+                    "usage": _REQUEST_USAGE.value,
+                }
+            )
             return {
                 "status": "ok",
                 "attempts": attempts,
-                "judgment": request_judgment(packet, config),
+                "judgment": judgment,
+                "api_attempts": attempt_metrics,
             }
         except JudgeError as exc:
-            failure = {"status": "failed", "attempts": attempts, "error": exc.as_json()}
+            attempt_metrics.append(
+                {
+                    "elapsed_seconds": time.monotonic() - started,
+                    "usage": _REQUEST_USAGE.value,
+                }
+            )
+            failure = {
+                "status": "failed",
+                "attempts": attempts,
+                "error": exc.as_json(),
+                "api_attempts": attempt_metrics,
+            }
             if exc.fatal:
                 stop.set()
                 return failure
@@ -312,6 +385,7 @@ def judge_one(packet, config, stop):
     return {
         "status": "failed" if attempts else "unprocessed",
         "attempts": attempts,
+        "api_attempts": attempt_metrics,
         "error": {
             "code": "cancelled",
             "message": "Processing stopped before a judgment was obtained.",

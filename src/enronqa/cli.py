@@ -360,6 +360,9 @@ def score(
         False, "--verbose", help="Request a verdict and brief explanation."
     ),
     judge_prompt: Path | None = None,
+    request_options: Path | None = typer.Option(
+        None, help="JSON file with temperature, max_tokens, and/or reasoning_effort."
+    ),
     retries: int = typer.Option(2, min=0),
     max_consecutive_failures: int = typer.Option(5, min=1),
     concurrency: int = typer.Option(1, min=1),
@@ -380,6 +383,7 @@ def score(
             max_consecutive_failures,
             concurrency,
             timeout,
+            request_options,
         )
         with Dataset(data_dir) as dataset:
             records, report = read_batch(input_path, dataset, selection.value)
@@ -405,6 +409,9 @@ def check(
         False, "--verbose", help="Request a verdict and brief explanation."
     ),
     judge_prompt: Path | None = None,
+    request_options: Path | None = typer.Option(
+        None, help="JSON file with temperature, max_tokens, and/or reasoning_effort."
+    ),
     retries: int = typer.Option(2, min=0),
     max_consecutive_failures: int = typer.Option(5, min=1),
     concurrency: int = typer.Option(1, min=1),
@@ -425,6 +432,7 @@ def check(
             max_consecutive_failures,
             concurrency,
             timeout,
+            request_options,
         )
         with Dataset(data_dir) as dataset:
             records, report = validation(
