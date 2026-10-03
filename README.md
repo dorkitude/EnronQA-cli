@@ -31,6 +31,8 @@ enronqa score answers.jsonl --set test \
   --output report.json
 ```
 
+On an [exe.dev](https://exe.dev/docs/integrations.md) VM, an integration base URL such as `https://fireworks.int.exe.xyz/inference/v1` injects the provider key at the network edge: the CLI then needs no API key and sends no `Authorization` header, so `--api-key-env` can be omitted.
+
 This example uses [DeepSeek V4 Flash on Fireworks](https://fireworks.ai/models/deepseek-ai/deepseek-v4-flash-0731). Substitute your provider's [OpenAI-compatible](https://docs.fireworks.ai/tools-sdks/openai-compatibility) base URL, model ID, and API-key environment variable.
 
 Or pipe the same answers to an external judge—no built-in API configuration needed:
@@ -93,7 +95,7 @@ These apply to `score` and `check`.
 | --- | --- |
 | `--base-url URL` | OpenAI-compatible API base URL, such as `https://api.fireworks.ai/inference/v1`. Required unless `OPENAI_BASE_URL` is set. Uses Chat Completions. |
 | `--model ID` | Judge model identifier. Required; no provider or model is hard-coded. |
-| `--api-key-env NAME` | Read credentials from this environment variable; defaults to `OPENAI_API_KEY`. Credentials are never included in reports. |
+| `--api-key-env NAME` | Read credentials from this environment variable; defaults to `OPENAI_API_KEY`. Not needed for an exe.dev integration base URL (`https://<name>.int.exe.xyz`), which injects the key itself. Credentials are never included in reports. |
 | `--verbose` | Use an expanded built-in prompt and request a brief explanation alongside the verdict. Off by default. |
 | `--judge-prompt FILE` | Replace the built-in judge instructions with your own UTF-8 prompt. The CLI still supplies the four judge inputs. Your prompt must request pure JSON; its fields are unrestricted. |
 | `--retries N` | Retries after the first attempt. Default `2`: at most three attempts per question, with backoff. |

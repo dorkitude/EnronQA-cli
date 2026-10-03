@@ -330,6 +330,25 @@ def test_override_key_env_and_endpoint(corpus, api, monkeypatch):
     assert "other-test-secret" not in result.output
 
 
+def test_exe_integration_needs_no_key(corpus, api, monkeypatch):
+    from enronqa import judging
+
+    assert judging.is_exe_integration("https://fireworks.int.exe.xyz/inference/v1")
+    assert not judging.is_exe_integration("http://fireworks.int.exe.xyz/inference/v1")
+    assert not judging.is_exe_integration("https://int.exe.xyz.evil.example/v1")
+    assert not judging.is_exe_integration("https://api.fireworks.ai/inference/v1")
+    monkeypatch.delenv("OPENAI_API_KEY")
+    with pytest.raises(ValueError, match="OPENAI_API_KEY"):
+        JudgeConfig.create("https://api.fireworks.ai/inference/v1", "m")
+    config = JudgeConfig.create("https://fireworks.int.exe.xyz/inference/v1", "m")
+    assert config.api_key == ""
+    # The local test server stands in for the integration: no Authorization header is sent.
+    monkeypatch.setattr(judging, "is_exe_integration", lambda url: True)
+    result = run_batch(["--base-url", api.url], BATCH.splitlines()[0])
+    assert result.exit_code == 0, result.output
+    assert "Authorization" not in api.calls[0][1]
+
+
 def test_external_judge_input_no_credentials(corpus, monkeypatch, tmp_path):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENAI_BASE_URL", raising=False)

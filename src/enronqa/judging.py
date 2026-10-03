@@ -52,6 +52,17 @@ def parse_json(text):
     return value
 
 
+def is_exe_integration(base_url):
+    """True for an exe.dev integration host (https://<name>.int.exe.xyz), which
+    injects the provider credential at the network edge, so no key is needed."""
+    try:
+        url = urllib.parse.urlsplit(base_url)
+    except ValueError:
+        return False
+    host = (url.hostname or "").lower()
+    return url.scheme == "https" and host.endswith(".int.exe.xyz")
+
+
 @dataclass(frozen=True)
 class JudgeConfig:
     base_url: str
@@ -106,11 +117,11 @@ class JudgeConfig:
         if not model or not model.strip():
             raise ValueError("Specify --model with your provider's model identifier")
         key = os.environ.get(api_key_env, "").strip()
-        if not key:
+        if not key and not is_exe_integration(base_url):
             raise ValueError(
                 f"Set the {api_key_env} environment variable, or choose --api-key-env NAME"
             )
-        if not key.isascii() or any(c.isspace() or ord(c) < 32 for c in key):
+        if key and not key.isascii() or any(c.isspace() or ord(c) < 32 for c in key):
             raise ValueError(
                 "The API key must be a single ASCII token without whitespace"
             )
@@ -269,9 +280,10 @@ def request_judgment(packet, config):
         config.base_url + "/chat/completions",
         data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
         headers={
-            "Authorization": "Bearer " + config.api_key,
             "Content-Type": "application/json",
             "Accept": "application/json",
+            # exe.dev integrations inject the credential at the network edge.
+            **({"Authorization": "Bearer " + config.api_key} if config.api_key else {}),
         },
     )
     try:
