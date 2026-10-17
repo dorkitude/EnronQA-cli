@@ -1,0 +1,224 @@
+name: Release
+# On a version tag: test, build the Python assets (wheel, sdist, amd64 .deb,
+# hash-pinned requirements) and standalone PyInstaller bundles for macOS and
+# Linux, then attach everything plus SHA256SUMS to the GitHub release.
+# Homebrew is updated afterwards from the maintainer's machine with
+# scripts/publish-packages.sh vX.Y.Z.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to (re)build and upload, e.g. v0.2.1
+        required: true
+permissions:
+  contents: read
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
+  PYTHON: '3.12'
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ env.PYTHON }}
+      - id: version
+        name: Tag matches the package version
+        run: |
+          version="${TAG#v}"
+          project="$(uv run --no-project python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
+          module="$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' src/enronqa/__init__.py)"
+          if [ "$version" != "$project" ] || [ "$version" != "$module" ]; then
+            echo "::error::tag $TAG, pyproject $project, __version__ $module must agree"; exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: requirements-release.txt matches uv.lock
+        run: |
+          uv export --locked --no-dev --no-emit-project --format requirements-txt --output-file /tmp/req.txt
+          diff <(grep -v '^#' packaging/requirements-release.txt) <(grep -v '^#' /tmp/req.txt)
+      - run: uv sync --locked
+      - run: uv run pytest
+
+  python:
+    needs: check
+    # 22.04 so the .deb's bundled runtime matches its libc6 (>= 2.35) floor.
+    runs-on: ubuntu-22.04
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: astral-sh/setup-uv@v6
+      - run: uv build
+      - name: Build the amd64 .deb
+        run: uv run --no-project python packaging/build_deb.py --wheel "dist/enronqa_cli-${VERSION}-py3-none-any.whl" --version "$VERSION"
+      - name: Test the .deb
+        run: |
+          sudo apt-get install -y "./dist/enronqa-cli_${VERSION}_amd64.deb"
+          test "$(enronqa --version)" = "$VERSION"
+          enronqa instructions >/dev/null
+      - name: Collect assets
+        run: |
+          mkdir assets
+          cp "dist/enronqa_cli-${VERSION}-py3-none-any.whl" "dist/enronqa_cli-${VERSION}.tar.gz" \
+             "dist/enronqa-cli_${VERSION}_amd64.deb" packaging/requirements-release.txt assets/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python
+          path: assets/*
+          if-no-files-found: error
+
+  binary:
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # pyarrow ships no universal2 wheels, so macOS gets one bundle per arch.
+          # The interpreter is requested by platform key so uv can't pick an
+          # installed interpreter of another architecture.
+          - {runner: macos-15, target: darwin_arm64, python: cpython-3.12-macos-aarch64-none}
+          - {runner: macos-15-intel, target: darwin_amd64, python: cpython-3.12-macos-x86_64-none}
+          # The oldest supported Ubuntu, for the widest glibc compatibility.
+          - {runner: ubuntu-22.04, target: linux_amd64, python: cpython-3.12-linux-x86_64-gnu}
+          - {runner: ubuntu-22.04-arm, target: linux_arm64, python: cpython-3.12-linux-aarch64-gnu}
+    runs-on: ${{ matrix.runner }}
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+      ASSET: enronqa-cli_${{ needs.check.outputs.version }}_${{ matrix.target }}.tar.gz
+      # macOS bundles are signed and notarized when MACOS_SIGN_P12 is set (the
+      # other four secrets are then required); otherwise those steps are skipped.
+      MACOS_SIGNING: ${{ secrets.MACOS_SIGN_P12 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: astral-sh/setup-uv@v6
+      - name: Install the locked runtime and PyInstaller
+        run: uv sync --locked --no-dev --group release --no-editable --managed-python --python "${{ matrix.python }}"
+      - name: Build the bundle
+        run: uv run --no-sync pyinstaller --noconfirm --clean packaging/enronqa.spec
+      - name: Check architecture
+        run: |
+          file dist/enronqa/enronqa
+          case "${{ matrix.target }}" in
+            darwin_arm64) file dist/enronqa/enronqa | grep -q 'arm64' ;;
+            darwin_amd64) file dist/enronqa/enronqa | grep -q 'x86_64' ;;
+            linux_amd64) file dist/enronqa/enronqa | grep -q 'x86-64' ;;
+            linux_arm64) file dist/enronqa/enronqa | grep -q 'aarch64' ;;
+          esac
+
+      - name: Import the signing certificate
+        if: runner.os == 'macOS' && env.MACOS_SIGNING == 'true'
+        env:
+          MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }}
+          MACOS_SIGN_PASSWORD: ${{ secrets.MACOS_SIGN_PASSWORD }}
+        run: |
+          keychain="$RUNNER_TEMP/signing.keychain-db"
+          keychain_password="$(openssl rand -hex 24)"
+          echo "::add-mask::$keychain_password"
+          printf '%s' "$MACOS_SIGN_P12" | base64 --decode > "$RUNNER_TEMP/sign.p12"
+          security create-keychain -p "$keychain_password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$keychain_password" "$keychain"
+          security import "$RUNNER_TEMP/sign.p12" -k "$keychain" -P "$MACOS_SIGN_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -k "$keychain_password" "$keychain" >/dev/null
+          # Prepend the signing keychain to the search list, keeping the others.
+          # shellcheck disable=SC2046 # one keychain path per word, none contain spaces
+          security list-keychains -d user -s "$keychain" $(security list-keychains -d user | tr -d '"')
+          rm -f "$RUNNER_TEMP/sign.p12"
+          identity="$(security find-identity -v -p codesigning "$keychain" | awk -F'"' '/Developer ID Application/ {print $2; exit}')"
+          [ -n "$identity" ] || { echo "::error::no Developer ID Application identity in MACOS_SIGN_P12"; exit 1; }
+          echo "SIGN_IDENTITY=$identity" >> "$GITHUB_ENV"
+          echo "SIGN_KEYCHAIN=$keychain" >> "$GITHUB_ENV"
+      - name: Sign the bundle
+        if: runner.os == 'macOS' && env.MACOS_SIGNING == 'true'
+        run: scripts/sign-macos-bundle.sh dist/enronqa "$SIGN_IDENTITY" "$SIGN_KEYCHAIN"
+      - name: Notarize
+        if: runner.os == 'macOS' && env.MACOS_SIGNING == 'true'
+        env:
+          MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
+          MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+          MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+        run: |
+          for v in MACOS_NOTARY_KEY MACOS_NOTARY_KEY_ID MACOS_NOTARY_ISSUER_ID; do
+            [ -n "${!v}" ] || { echo "::error::MACOS_SIGN_P12 is set but $v is empty"; exit 1; }
+          done
+          key="$RUNNER_TEMP/notary.p8"
+          trap 'rm -f "$key"' EXIT
+          printf '%s' "$MACOS_NOTARY_KEY" | base64 --decode > "$key"
+          auth=(--key "$key" --key-id "$MACOS_NOTARY_KEY_ID" --issuer "$MACOS_NOTARY_ISSUER_ID")
+          # notarytool takes a zip, not a bare directory. A command-line bundle
+          # can't be stapled; Gatekeeper checks the ticket online.
+          ditto -c -k --keepParent dist/enronqa "$RUNNER_TEMP/enronqa.zip"
+          # --wait exits 0 even when Apple rejects the submission, so check the status.
+          xcrun notarytool submit "$RUNNER_TEMP/enronqa.zip" "${auth[@]}" --wait --output-format json > "$RUNNER_TEMP/notary.json"
+          cat "$RUNNER_TEMP/notary.json"; echo
+          id="$(plutil -extract id raw -o - "$RUNNER_TEMP/notary.json")"
+          status="$(plutil -extract status raw -o - "$RUNNER_TEMP/notary.json")"
+          if [ "$status" != "Accepted" ]; then
+            xcrun notarytool log "$id" "${auth[@]}" || true
+            echo "::error::notarization status: $status"; exit 1
+          fi
+          rm -f "$RUNNER_TEMP/enronqa.zip"
+      - name: Remove the signing keychain
+        if: always() && runner.os == 'macOS' && env.SIGN_KEYCHAIN != ''
+        run: security delete-keychain "$SIGN_KEYCHAIN" || true
+
+      - name: Package
+        run: |
+          cp LICENSE dist/enronqa/LICENSE
+          tar -C dist -czf "$ASSET" enronqa
+          ls -l "$ASSET"
+      - name: Smoke-test the unpacked bundle from an empty directory
+        run: |
+          root="$RUNNER_TEMP/smoke"
+          mkdir -p "$root/bin" "$root/cwd"
+          tar -C "$root" -xzf "$ASSET"
+          # Homebrew links the executable into its bin directory, so call it through a symlink.
+          ln -s "$root/enronqa/enronqa" "$root/bin/enronqa"
+          cd "$root/cwd"
+          test "$(env -i HOME="$HOME" PATH=/usr/bin:/bin "$root/bin/enronqa" --version)" = "$VERSION"
+          "$root/bin/enronqa" --help | grep -q fetch
+          "$root/bin/enronqa" instructions | grep -q 'nonblank string answer'
+          ENRONQA_FROZEN_SELFTEST=1 "$root/bin/enronqa"
+          test -z "$(ls -A)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.target }}
+          path: ${{ env.ASSET }}
+          if-no-files-found: error
+
+  release:
+    needs: [check, python, binary]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ needs.check.outputs.version }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: assets
+          merge-multiple: true
+      - name: Checksums
+        working-directory: assets
+        run: |
+          sha256sum -- * > SHA256SUMS
+          cat SHA256SUMS
+      - name: Create or update the GitHub release
+        run: |
+          if ! gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG" -R "$GITHUB_REPOSITORY" --verify-tag --title "$TAG" \
+              --notes "Install with \`brew install dorkitude/tap/enronqa-cli\`, a standalone enronqa-cli_${VERSION}_<os>_<arch>.tar.gz bundle, the amd64 .deb, or the wheel. See the README."
+          fi
+          gh release upload "$TAG" -R "$GITHUB_REPOSITORY" --clobber assets/*

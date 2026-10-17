@@ -43,28 +43,50 @@ enronqa judge-input answers.jsonl --set test | your-judge > judgments.jsonl
 
 ## Installation
 
-### macOS: Homebrew
+### Homebrew (macOS and Linux)
 
 ```sh
 brew install dorkitude/tap/enronqa-cli
 ```
 
+This installs a prebuilt standalone binary (a cask), so Homebrew compiles nothing and needs neither Python nor the Xcode Command Line Tools. macOS builds are signed and notarized.
+
+**Upgrading from 0.2.0 or earlier**, which installed a Homebrew formula: switch once with
+
+```sh
+brew uninstall enronqa-cli && brew install dorkitude/tap/enronqa-cli
+```
+
+After that, `brew upgrade` keeps it current.
+
+### Standalone binary
+
+Each release has a self-contained bundle per platform (Python and every dependency included):
+`enronqa-cli_<version>_darwin_arm64.tar.gz`, `_darwin_amd64`, `_linux_amd64`, and `_linux_arm64`. Unpack it anywhere and put `enronqa/enronqa` on your `PATH`:
+
+```sh
+curl -fL https://github.com/dorkitude/EnronQA-cli/releases/download/v0.2.1/enronqa-cli_0.2.1_linux_amd64.tar.gz | tar -xz -C ~/.local/share
+ln -s ~/.local/share/enronqa/enronqa ~/.local/bin/enronqa
+```
+
+Keep the `enronqa/` directory intact: the executable loads its runtime from `enronqa/_internal/`. Linux bundles need glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+).
+
 ### Ubuntu 22.04+ amd64: apt
 
 ```sh
-curl -fLO https://github.com/dorkitude/EnronQA-cli/releases/download/v0.2.0/enronqa-cli_0.2.0_amd64.deb
-sudo apt install ./enronqa-cli_0.2.0_amd64.deb
+curl -fLO https://github.com/dorkitude/EnronQA-cli/releases/download/v0.2.1/enronqa-cli_0.2.1_amd64.deb
+sudo apt install ./enronqa-cli_0.2.1_amd64.deb
 ```
 
-Homebrew supplies Python; the `.deb` bundles an isolated Python runtime. The `.deb` is a downloadable package, not a hosted apt repository.
+The `.deb` bundles an isolated Python runtime. It is a downloadable package, not a hosted apt repository.
 
 ### Python / uv
 
 ```sh
-uv tool install 'https://github.com/dorkitude/EnronQA-cli/releases/download/v0.2.0/enronqa_cli-0.2.0-py3-none-any.whl'
+uv tool install 'https://github.com/dorkitude/EnronQA-cli/releases/download/v0.2.1/enronqa_cli-0.2.1-py3-none-any.whl'
 ```
 
-Alternatively, use `pip install` with that wheel URL inside a Python 3.10+ virtual environment. Release assets include checksums. Every installation method requires a separate `enronqa fetch` to download the dataset.
+Alternatively, use `pip install` with that wheel URL inside a Python 3.10+ virtual environment. Release assets include checksums (`SHA256SUMS`). Every installation method requires a separate `enronqa fetch` to download the dataset.
 
 ## Commands
 

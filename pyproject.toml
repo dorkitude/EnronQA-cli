@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "enronqa-cli"
-version = "0.2.0"
+version = "0.2.1"
 description = "Reproducible EnronQA dataset access and LLM answer evaluation"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,6 +17,7 @@ enronqa = "enronqa.cli:app"
 
 [dependency-groups]
 dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
+release = ["pyinstaller>=6.22,<7"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/enronqa"]

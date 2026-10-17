@@ -39,7 +39,7 @@ def test_help(args):
 
 
 def test_version():
-    assert invoke(["--version"]).stdout.strip() == "0.2.0"
+    assert invoke(["--version"]).stdout.strip() == "0.2.1"
 
 
 def test_missing_data(tmp_path, monkeypatch):
